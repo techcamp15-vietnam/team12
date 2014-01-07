@@ -15,7 +15,7 @@ import org.andengine.util.debug.Debug;
 import techcamp.nextnumber.MainActivity;
 import techcamp.nextnumber.manager.ResourceManager;
 
-public abstract class AbstractScene extends Scene {
+public abstract class MultiGameMenu extends Scene {
 
 	protected ResourceManager res = ResourceManager.getInstance();
 
@@ -24,7 +24,7 @@ public abstract class AbstractScene extends Scene {
 	protected VertexBufferObjectManager vbom;
 	protected Camera camera;
 
-	public AbstractScene() {
+	public MultiGameMenu() {
 		if (ResourceManager.getInstance() != null)
 			initialize(ResourceManager.getInstance().activity,
 					ResourceManager.getInstance());

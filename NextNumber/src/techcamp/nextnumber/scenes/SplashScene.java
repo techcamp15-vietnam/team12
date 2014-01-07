@@ -1,21 +1,20 @@
 /**
  * @author pvhau
- * @team TechCamp Group 12 - 3H
- * @date 06/01/2013
+ * @team TechCamp G12
+ * @date 07/01/2013
  */
-
 package techcamp.nextnumber.scenes;
 
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.DelayModifier;
 import org.andengine.entity.sprite.Sprite;
-import org.andengine.util.debug.Debug;
+
+import techcamp.nextnumber.MainActivity;
+import android.util.Log;
 
 public class SplashScene extends AbstractScene {
 
-	public static final long SPLASH_DURATION = 6000;
-
-	private Sprite mSplash;
+	Sprite splash;
 
 	@Override
 	public void loadResources() {
@@ -24,17 +23,17 @@ public class SplashScene extends AbstractScene {
 
 	@Override
 	public void create() {
-		mSplash = new Sprite(0, 0, res.mSplashRegion, res.vbom);
-		mSplash.registerEntityModifier(new DelayModifier(
-				SPLASH_DURATION / 2000f) {
+		splash = new Sprite(0, 0, res.splashRegion, vbom);
+		attachChild(splash);
+		splash.registerEntityModifier(new DelayModifier(
+				MainActivity.SPLASH_DURATION / 2000f) {
 			@Override
 			protected void onModifierFinished(IEntity pItem) {
-				Debug.d("Changing splash!");
+				Log.d("Splash", "Changing splash!");
 				super.onModifierFinished(pItem);
-				mSplash.setVisible(false);
+				//splash.setVisible(false);
 			}
-		});
-
+		});		
 	}
 
 	@Override
@@ -43,7 +42,7 @@ public class SplashScene extends AbstractScene {
 	}
 
 	@Override
-	public void destroy() {		
+	public void destroy() {
 	}
 
 	@Override

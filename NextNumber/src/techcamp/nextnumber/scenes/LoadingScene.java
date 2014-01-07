@@ -1,9 +1,8 @@
 /**
  * @author pvhau
- * @team TechCamp Group 12 - 3H
- * @date 06/01/2013
+ * @team TechCamp G12
+ * @date 07/01/2013
  */
-
 package techcamp.nextnumber.scenes;
 
 import org.andengine.util.color.Color;
@@ -16,7 +15,7 @@ public class LoadingScene extends AbstractScene {
 
 	@Override
 	public void create() {
-		getBackground().setColor(Color.BLUE);
+		getBackground().setColor(Color.BLACK);
 	}
 
 	@Override

@@ -3,12 +3,11 @@
  * @team TechCamp G12
  * @date 07/01
  */
-
 package techcamp.nextnumber.scenes;
 
 import org.andengine.util.color.Color;
 
-public class ClassicGameScene extends GameScene {
+public class GameScene extends AbstractScene {
 
 	@Override
 	public void loadResources() {

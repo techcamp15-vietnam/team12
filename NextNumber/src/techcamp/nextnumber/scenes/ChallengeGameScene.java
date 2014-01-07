@@ -1,47 +1,37 @@
 /**
  * @author pvhau
- * @team TechCamp Group 12 - 3H
- * @date 06/01/2013
+ * @team TechCamp G12
+ * @date 07/01
  */
-
 package techcamp.nextnumber.scenes;
 
-public class ChallengeGameScene extends AbstractScene {
+import org.andengine.util.color.Color;
+
+public class ChallengeGameScene extends GameScene {
 
 	@Override
 	public void loadResources() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void create() {
-		// TODO Auto-generated method stub
-
+		getBackground().setColor(Color.BLUE);
 	}
 
 	@Override
 	public void unloadResources() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onPause() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onResume() {
-		// TODO Auto-generated method stub
-
 	}
 
 }
