@@ -109,23 +109,23 @@ public class MenuScene extends AbstractScene {
 	public void create() {
 		Log.i("Menu", "create");
 		// set Background
-		attachChild(new Sprite(0, 0, res.mMenuBackgroud, vbom));
+		attachChild(new Sprite(0, 0, res.mMenuBackground, vbom));
 
 		homeMenuChild = new Entity() {
-			// public boolean first = false;
-			//
-			// @Override
-			// protected void onManagedUpdate(final float pSecondsElapsed) {
-			// super.onManagedUpdate(pSecondsElapsed);
-			// if (!this.first) {
-			// Log.i("Menu", "onManageUpdate");
-			// this.first = true;
-			// this.registerEntityModifier(new MoveModifier(0.25f, 0f,
-			// MainActivity.H, 0f, 0f));
-			// }
-			// }
+			public boolean first = false;
+
+			@Override
+			protected void onManagedUpdate(final float pSecondsElapsed) {
+				super.onManagedUpdate(pSecondsElapsed);
+				if (!this.first) {
+					Log.i("Menu", "onManageUpdate");
+					this.first = true;
+					this.registerEntityModifier(new MoveModifier(0.25f, 0f, 0f,
+							MainActivity.H, 0f));
+				}
+			}
 		};
-		gameMenuChild = new Entity();
+		gameMenuChild = new Entity(MainActivity.W, 0);
 		Log.i("Menu", "load entity");
 
 		homeMenuChild.attachChild(home_title);
@@ -157,7 +157,7 @@ public class MenuScene extends AbstractScene {
 				achievement_region, vbom, 1.2f) {
 			@Override
 			public void onClick() {
-				// Achievement scene show
+				// Achievement scene show				
 			}
 		};
 		homeMenuChild.attachChild(achievBtn);
@@ -181,9 +181,9 @@ public class MenuScene extends AbstractScene {
 			public void onClick() {
 				// Game play show: classic mode
 				if (game_title == single_title) {
-					SceneManager.showGameMode(SINGLE);
+					SceneManager.getInstance().showGameMode(CLASSIC, SINGLE);
 				} else {
-					SceneManager.showMultiMenu(CLASSIC);
+					SceneManager.getInstance().showMultiMenu(CLASSIC);
 				}
 			}
 		};
@@ -196,9 +196,9 @@ public class MenuScene extends AbstractScene {
 			public void onClick() {
 				// Game play show: challenge mode
 				if (game_title == single_title) {
-					SceneManager.showGameMode(SINGLE);
+					SceneManager.getInstance().showGameMode(CHALLENGE, SINGLE);
 				} else {
-					SceneManager.showMultiMenu(CHALLENGE);
+					SceneManager.getInstance().showMultiMenu(CHALLENGE);
 				}
 			}
 		};

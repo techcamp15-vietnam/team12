@@ -48,6 +48,8 @@ public class ResourceManager {
 
 	public ITextureRegion mChallengeBackgroundRegion;
 
+	public ITextureRegion mBackgroundRegion;
+
 	public Music mMusic;
 
 	public Sound mSound;
@@ -58,7 +60,7 @@ public class ResourceManager {
 
 	public ITextureRegion mOptionRegion;
 
-	public ITextureRegion mMenuBackgroud;
+	public ITextureRegion mMenuBackground;
 
 	public Font mFont;
 
@@ -162,7 +164,7 @@ public class ResourceManager {
 		BuildableBitmapTextureAtlas mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
 				engine.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
-		mMenuBackgroud = BitmapTextureAtlasTextureRegionFactory
+		mMenuBackground = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
 						"menu_background.png");
 
@@ -209,6 +211,25 @@ public class ResourceManager {
 
 		} catch (final TextureAtlasBuilderException e) {
 			throw new RuntimeException("Error while loading Splash textures", e);
+		}
+	}
+
+	public synchronized void loadLoadingBackground() {
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+		BuildableBitmapTextureAtlas mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
+				engine.getTextureManager(), MainActivity.W, MainActivity.H,
+				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
+		mBackgroundRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
+						"background.png");
+
+		try {
+			mBitmapTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 0, 0));
+			mBitmapTextureAtlas.load();
+		} catch (final TextureAtlasBuilderException e) {
+			Log.e("Resource", e.getMessage());
 		}
 	}
 
@@ -287,7 +308,7 @@ public class ResourceManager {
 	}
 
 	public synchronized void unloadMenuBackground() {
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mMenuBackgroud
+		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mMenuBackground
 				.getTexture();
 		mBitmapTextureAtlas.unload();
 		System.gc();
@@ -295,6 +316,13 @@ public class ResourceManager {
 
 	public synchronized void unloadAchievement() {
 		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mAchivementRegion
+				.getTexture();
+		mBitmapTextureAtlas.unload();
+		System.gc();
+	}
+
+	public synchronized void unloadBackground() {
+		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mBackgroundRegion
 				.getTexture();
 		mBitmapTextureAtlas.unload();
 		System.gc();
@@ -313,9 +341,14 @@ public class ResourceManager {
 		mBitmapTextureAtlas.unload();
 		System.gc();
 	}
-	
+
 	public synchronized void unloadFont() {
 		mFont.unload();
+	}
+
+	public void loadGameResources() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	// public void unloadSplashResources() {

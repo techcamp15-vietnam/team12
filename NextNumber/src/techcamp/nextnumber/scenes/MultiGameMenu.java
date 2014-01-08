@@ -6,51 +6,41 @@
 
 package techcamp.nextnumber.scenes;
 
-import org.andengine.engine.Engine;
-import org.andengine.engine.camera.Camera;
-import org.andengine.entity.scene.Scene;
-import org.andengine.opengl.vbo.VertexBufferObjectManager;
-import org.andengine.util.debug.Debug;
+import org.andengine.util.color.Color;
 
-import techcamp.nextnumber.MainActivity;
-import techcamp.nextnumber.manager.ResourceManager;
+public class MultiGameMenu extends AbstractScene{
 
-public abstract class MultiGameMenu extends Scene {
-
-	protected ResourceManager res = ResourceManager.getInstance();
-
-	protected Engine engine;
-	protected MainActivity activity;
-	protected VertexBufferObjectManager vbom;
-	protected Camera camera;
-
-	public MultiGameMenu() {
-		if (ResourceManager.getInstance() != null)
-			initialize(ResourceManager.getInstance().activity,
-					ResourceManager.getInstance());
+	@Override
+	public void loadResources() {		
 	}
 
-	public void initialize(MainActivity activity, ResourceManager res) {
-		this.res = res;
-		this.activity = activity;
-		this.vbom = activity.getVertexBufferObjectManager();
-		this.engine = activity.getEngine();
-		this.camera = engine.getCamera();
+	@Override
+	public void create() {
+		getBackground().setColor(Color.CYAN);
 	}
 
-	public abstract void loadResources();
-
-	public abstract void create();
-
-	public abstract void unloadResources();
-
-	public abstract void destroy();
-
-	public void onBackKeyPressed() {
-		Debug.d("Back key pressed");
+	@Override
+	public void unloadResources() {
+		// TODO Auto-generated method stub
+		
 	}
 
-	public abstract void onPause();
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
 
-	public abstract void onResume();
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

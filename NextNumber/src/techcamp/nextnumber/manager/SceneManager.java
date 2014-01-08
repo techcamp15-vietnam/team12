@@ -8,10 +8,13 @@ package techcamp.nextnumber.manager;
 
 import org.andengine.util.debug.Debug;
 
-import techcamp.nextnumber.MainActivity;
 import techcamp.nextnumber.scenes.AbstractScene;
+import techcamp.nextnumber.scenes.ChallengeGameScene;
+import techcamp.nextnumber.scenes.ClassicGameScene;
+import techcamp.nextnumber.scenes.GameScene;
 import techcamp.nextnumber.scenes.LoadingScene;
 import techcamp.nextnumber.scenes.MenuScene;
+import techcamp.nextnumber.scenes.MultiGameMenu;
 import techcamp.nextnumber.scenes.SplashScene;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -28,6 +31,10 @@ public class SceneManager {
 	private ResourceManager res = ResourceManager.getInstance();
 	private AbstractScene currentScene;
 	private LoadingScene loadingScene;
+	private int modeGameplay; // mode gameplay CLASSIC/CHALLENGE
+	private int modePlayer; // mode player SINGLE/CHALLENGE
+
+	private AbstractScene oldScene;
 
 	private SceneManager() {
 	}
@@ -43,41 +50,21 @@ public class SceneManager {
 		res.engine.setScene(splash);
 		Log.i("Scene", "show SPLASH");
 
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				long timestamp = System.currentTimeMillis();
+		loadingScene = new LoadingScene();
+		loadingScene.loadResources();
+		loadingScene.create();
 
-				MenuScene menu = new MenuScene();
-				menu.loadResources();
-				menu.create();
-				loadingScene = new LoadingScene();
-				loadingScene.loadResources();
-				loadingScene.create();
-				// we want to show the splash at least SPLASH_DURATION
-				// miliseconds
-				long elapsed = System.currentTimeMillis() - timestamp;
-				if (elapsed < MainActivity.SPLASH_DURATION) {
-					try {
-						Thread.sleep(MainActivity.SPLASH_DURATION - elapsed);
-					} catch (InterruptedException e) {
-						Debug.w("This should not happen");
-					}
-				}
-				setCurrentScene(menu);
-				res.engine.setScene(menu);
-				splash.destroy();
-				splash.unloadResources();
-				return null;
-			}
-		}.execute();
-
+		showMenu();
 	}
 
-	public void showGameClassicPlay() {
-
+	private void showMenu() {
+		showScene(MenuScene.class);
 	}
 
+	/**
+	 * @usage show screen
+	 * @param sceneClazz: class scene
+	 */
 	public void showScene(Class<? extends AbstractScene> sceneClazz) {
 		if (sceneClazz == LoadingScene.class) {
 			throw new IllegalArgumentException(
@@ -123,22 +110,37 @@ public class SceneManager {
 		return currentScene;
 	}
 
+	/**
+	 * @usage set current scene
+	 * @param currentScene
+	 */
 	private void setCurrentScene(AbstractScene currentScene) {
 		this.currentScene = currentScene;
 	}
 
 	/**
-	 * show Game Scene mode SINGLE/MULTI
-	 * 
+	 * @usage show Game Scene mode SINGLE/MULTI
 	 * @param mode
 	 */
-	public static void showGameMode(int mode) {
+	public void showGameMode(int modeGame, int modePlayer) {
+		this.modeGameplay = modeGame;
+		this.modePlayer = modePlayer;
 
+		if (modeGameplay == CLASSIC){
+			showScene(ClassicGameScene.class);
+		} else if (modeGameplay == CHALLENGE){
+			showScene(ChallengeGameScene.class);
+		}
 	}
 
-	public static void showMultiMenu(int mode) {
-		// TODO Auto-generated method stub
+	/**
+	 * @usage show multiplayer Menu Screen after select mode gameplay
+	 * @param mode
+	 */
+	public void showMultiMenu(int mode) {
+		this.modeGameplay = mode;
+		this.modePlayer = MULTI;
 
+		showScene(MultiGameMenu.class);
 	}
-
 }
