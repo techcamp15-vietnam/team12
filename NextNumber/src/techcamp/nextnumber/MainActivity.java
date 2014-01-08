@@ -76,9 +76,8 @@ public class MainActivity extends BaseGameActivity {
 			OnCreateResourcesCallback pOnCreateResourcesCallback)
 			throws IOException {
 		ResourceManager.getInstance().init(this);
-		ResourceManager.getInstance().loadMusic();
-		ResourceManager.getInstance().resumeMusic();
-		pOnCreateResourcesCallback.onCreateResourcesFinished();
+		ResourceManager.getInstance().loadMusic();		
+		pOnCreateResourcesCallback.onCreateResourcesFinished();		
 	}
 
 	@Override
@@ -96,6 +95,7 @@ public class MainActivity extends BaseGameActivity {
 			OnPopulateSceneCallback pOnPopulateSceneCallback)
 			throws IOException {
 		SceneManager.getInstance().showSplash();
+		ResourceManager.getInstance().resumeMusic();
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 	}
 }

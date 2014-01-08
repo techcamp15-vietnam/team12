@@ -8,9 +8,11 @@ package techcamp.nextnumber.manager;
 
 import org.andengine.util.debug.Debug;
 
+import techcamp.nextnumber.MainActivity;
 import techcamp.nextnumber.scenes.AbstractScene;
 import techcamp.nextnumber.scenes.LoadingScene;
 import techcamp.nextnumber.scenes.MenuScene;
+import techcamp.nextnumber.scenes.SplashScene;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -28,49 +30,42 @@ public class SceneManager {
 	/**
 	 * Shows splash screen and loads resources on background
 	 */
-	public void showSplash() {
-		// Debug.i("Scene: Splash");
-		// final SplashScene splash = new SplashScene();
-		// setCurrentScene(splash);
-		// splash.loadResources();
-		// splash.create();
-		// res.engine.setScene(splash);
-		Log.i("Scene", "show SPLASH");
-		final MenuScene menu = new MenuScene();
-		setCurrentScene(menu);
-		menu.loadResources();
-		menu.create();
-		res.engine.setScene(menu);
+	public void showSplash() {		
+		 final SplashScene splash = new SplashScene();
+		 setCurrentScene(splash);
+		 splash.loadResources();
+		 splash.create();
+		 res.engine.setScene(splash);
+		Log.i("Scene", "show SPLASH");	
 
-		// new AsyncTask<Void, Void, Void>() {
-		// @Override
-		// protected Void doInBackground(Void... params) {
-		// long timestamp = System.currentTimeMillis();
-		// // TODO later load common resources here
-		//
-		// MenuScene menu = new MenuScene();
-		// menu.loadResources();
-		// menu.create();
-		// loadingScene = new LoadingScene();
-		// loadingScene.loadResources();
-		// loadingScene.create();
-		// // we want to show the splash at least SPLASH_DURATION miliseconds
-		// long elapsed = System.currentTimeMillis() - timestamp;
-		// if (elapsed < MainActivity.SPLASH_DURATION) {
-		// try {
-		// Thread.sleep(MainActivity.SPLASH_DURATION - elapsed);
-		// } catch (InterruptedException e) {
-		// Debug.w("This should not happen");
-		// }
-		// }
-		// setCurrentScene(menu);
-		// res.engine.setScene(menu);
-		// splash.destroy();
-		// splash.unloadResources();
-		// return null;
-		// }
-		// }.execute();
-		//
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				long timestamp = System.currentTimeMillis();				
+
+				MenuScene menu = new MenuScene();
+				menu.loadResources();
+				menu.create();
+				loadingScene = new LoadingScene();
+				loadingScene.loadResources();
+				loadingScene.create();
+				// we want to show the splash at least SPLASH_DURATION miliseconds
+				long elapsed = System.currentTimeMillis() - timestamp;
+				if (elapsed < MainActivity.SPLASH_DURATION) {
+					try {
+						Thread.sleep(MainActivity.SPLASH_DURATION - elapsed);
+					} catch (InterruptedException e) {
+						Debug.w("This should not happen");
+					}
+				}
+				setCurrentScene(menu);
+				res.engine.setScene(menu);
+				splash.destroy();
+				splash.unloadResources();
+				return null;
+			}
+		}.execute();
+	
 	}
 	
 	public void showGameClassicPlay(){

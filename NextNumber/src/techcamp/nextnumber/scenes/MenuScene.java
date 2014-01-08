@@ -5,12 +5,10 @@
  */
 package techcamp.nextnumber.scenes;
 
+import org.andengine.entity.Entity;
 import org.andengine.entity.modifier.MoveModifier;
-import org.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
-import org.andengine.entity.scene.menu.item.IMenuItem;
-import org.andengine.entity.scene.menu.item.SpriteMenuItem;
-import org.andengine.entity.scene.menu.item.decorator.ScaleMenuItemDecorator;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
@@ -22,91 +20,82 @@ import org.andengine.opengl.texture.bitmap.BitmapTextureFormat;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
 import techcamp.nextnumber.MainActivity;
+import techcamp.nextnumber.utils.ScaleButton;
 import android.util.Log;
 
-public class MenuScene extends AbstractScene implements
-		IOnMenuItemClickListener {
+public class MenuScene extends AbstractScene {
 
-	private ITextureRegion play_region;
-	private ITextureRegion options_region;
-	private org.andengine.entity.scene.menu.MenuScene homeMenuChild;
-	private org.andengine.entity.scene.menu.MenuScene singleMenuChild;
-	private org.andengine.entity.scene.menu.MenuScene multiMenuChild;
-	private ITextureRegion home_title;
-	private ITextureRegion single_title;
-	private ITextureRegion multi_title;
-	private ITextureRegion option_title;
-	private ITextureRegion achive_title;
+	private ITextureRegion play_single_region;
+	private ITextureRegion play_multi_region;
+	private ITextureRegion achievement_region;
+	private ITextureRegion highscore_region;
 	private ITextureRegion classic_region;
 	private ITextureRegion challenge_region;
-	private ITextureRegion mul_classic_region;
-	private ITextureRegion mul_challenge_region;
+	private Entity homeMenuChild;
+	private Entity gameMenuChild;
+	private Text home_title;
+	private Text single_title;
+	private Text multi_title;
 	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
-	private BuildableBitmapTextureAtlas mSingleBitmapTextureAtlas;
-	private BuildableBitmapTextureAtlas mMultiBitmapTextureAtlas;
-	private Object mCurrentScreen;
-	public static final int MENU_PLAY = 0;
-	public static final int MENU_OPTIONS = 1;
-	public static final int SINGLE_CLASSIC = 2;
-	public static final int SINGLE_CHALLENGE = 3;
-	public static final int MULTI_CLASSIC = 4;
-	public static final int MULTI_CHALLENGE = 5;
+	private BuildableBitmapTextureAtlas mGameBitmapTextureAtlas;
+	protected static final int SINGLE = 0;
+	protected static final int MULTI = 1;
 
+	// Load resources
 	@Override
 	public void loadResources() {
 		// load Background
 		res.loadMenuBackground();
+		res.loadFonts();
 
 		// load home menu
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
 		mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
 				engine.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
-		// title
-		play_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				mBitmapTextureAtlas, activity.getAssets(), "play.png");
-		options_region = BitmapTextureAtlasTextureRegionFactory
+		play_single_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
-						"option.png");
+						"play_single.png");
+		play_multi_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
+						"play_multi.png");
+		achievement_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
+						"achievement.png");
+		highscore_region = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
+						"highscore.png");
 		Log.i("Menu", "OK! load home");
 
-		mSingleBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
+		// load player menu
+		mGameBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
 				engine.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
 		classic_region = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mSingleBitmapTextureAtlas,
-						activity.getAssets(), "play.png");
+				.createFromAsset(mGameBitmapTextureAtlas, activity.getAssets(),
+						"classic.png");
 		challenge_region = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mSingleBitmapTextureAtlas,
-						activity.getAssets(), "option.png");
-		Log.i("Menu", "OK! load single");
+				.createFromAsset(mGameBitmapTextureAtlas, activity.getAssets(),
+						"challenge.png");
+		Log.i("Menu", "OK! load game");
 
-		mMultiBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
-				engine.getTextureManager(), MainActivity.W, MainActivity.H,
-				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
-		mul_classic_region = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mMultiBitmapTextureAtlas,
-						activity.getAssets(), "play.png");
-		mul_challenge_region = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mMultiBitmapTextureAtlas,
-						activity.getAssets(), "option.png");
-		Log.i("Menu", "OK! load multi");
+		// Title
+		home_title = new Text(MainActivity.W * 0.4f, MainActivity.H * 0.1f,
+				res.mFont, "NEXtNUMber", vbom);
+		single_title = new Text(MainActivity.W * 0.4f, MainActivity.H * 0.1f,
+				res.mFont, "Singleplayer", vbom);
+		multi_title = new Text(MainActivity.W * 0.4f, MainActivity.H * 0.1f,
+				res.mFont, "Multiplayer", vbom);
 
 		try {
 			mBitmapTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
 							0, 0, 0));
 			mBitmapTextureAtlas.load();
-
-			mSingleBitmapTextureAtlas
+			mGameBitmapTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
 							0, 0, 0));
-			mSingleBitmapTextureAtlas.load();
-			mMultiBitmapTextureAtlas
-					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
-							0, 0, 0));
-			mMultiBitmapTextureAtlas.load();
-
+			mGameBitmapTextureAtlas.load();
 		} catch (final TextureAtlasBuilderException e) {
 			Log.e("Menu", e.getMessage());
 		}
@@ -118,50 +107,117 @@ public class MenuScene extends AbstractScene implements
 		// set Background
 		attachChild(new Sprite(0, 0, res.mMenuBackgroud, vbom));
 
-		homeMenuChild = new org.andengine.entity.scene.menu.MenuScene(
-				res.camera);
-		singleMenuChild = new org.andengine.entity.scene.menu.MenuScene(
-				res.camera);
-		multiMenuChild = new org.andengine.entity.scene.menu.MenuScene(
-				res.camera);
-		homeMenuChild.setPosition(10, 10);
-		singleMenuChild.setPosition(10 - camera.getWidth(), 10);
+		homeMenuChild = new Entity() {
+			public boolean first = false;
 
-		final IMenuItem playMenuItem = new ScaleMenuItemDecorator(
-				new SpriteMenuItem(MENU_PLAY, play_region, vbom), 1.2f, 1);
-		final IMenuItem optionsMenuItem = new ScaleMenuItemDecorator(
-				new SpriteMenuItem(MENU_OPTIONS, options_region, vbom), 1.2f, 1);
-		final IMenuItem classicItem = new ScaleMenuItemDecorator(
-				new SpriteMenuItem(SINGLE_CLASSIC, classic_region, vbom), 1.2f,
-				1);
-		final IMenuItem challengeItem = new ScaleMenuItemDecorator(
-				new SpriteMenuItem(SINGLE_CHALLENGE, challenge_region, vbom),
-				1.2f, 1);
+			@Override
+			protected void onManagedUpdate(final float pSecondsElapsed) {
+				super.onManagedUpdate(pSecondsElapsed);
+				if (!this.first) {
+					Log.i("Menu", "onManageUpdate");
+					this.first = true;
+					this.registerEntityModifier(new MoveModifier(0.25f, 0f,
+							MainActivity.H, 0f, 0f));
+				}
+			}
+		};
+		gameMenuChild = new Entity(MainActivity.W, 0f);
+		Log.i("Menu", "load entity");
 
-		homeMenuChild.addMenuItem(playMenuItem);
-		homeMenuChild.addMenuItem(optionsMenuItem);
-//		singleMenuChild.addMenuItem(classicItem);
-//		singleMenuChild.addMenuItem(challengeItem);
-
-		homeMenuChild.buildAnimations();		
-		homeMenuChild.setBackgroundEnabled(false);
-//		singleMenuChild.buildAnimations();
-//		singleMenuChild.setBackgroundEnabled(false);
-
-		playMenuItem.setPosition(playMenuItem.getX(), playMenuItem.getY());
-		optionsMenuItem.setPosition(optionsMenuItem.getX(),
-				optionsMenuItem.getY() + 15);
-
-		homeMenuChild.setOnMenuItemClickListener(this);
-		//singleMenuChild.setOnMenuItemClickListener(this);
-
+		homeMenuChild.attachChild(home_title);
+		ScaleButton playSingleBtn = new ScaleButton(0.75f * MainActivity.W,
+				0.3f * MainActivity.H, play_single_region, vbom, 1.2f) {
+			@Override
+			public void onClick() {
+				goToGameScreen(SINGLE);
+			}
+		};
+		homeMenuChild.attachChild(playSingleBtn);		
+		this.registerTouchArea(playSingleBtn);	
 		attachChild(homeMenuChild);
-	//	attachChild(singleMenuChild);
+		ScaleButton playMultiBtn = new ScaleButton(playSingleBtn.getX(),
+				playSingleBtn.getY() + 15, play_multi_region, vbom, 1.2f) {
+			@Override
+			public void onClick() {
+				goToGameScreen(MULTI);
+			}
+		};
+		homeMenuChild.attachChild(playMultiBtn);
+		this.registerTouchArea(playMultiBtn);
+		ScaleButton achievBtn = new ScaleButton(playMultiBtn.getX(),
+				playMultiBtn.getY() + 15, achievement_region, vbom, 1.2f) {
+			@Override
+			public void onClick() {
+				// Achievement scene show
+			}
+		};
+		homeMenuChild.attachChild(achievBtn);		
+		this.registerTouchArea(achievBtn);
+		ScaleButton highBtn = new ScaleButton(achievBtn.getX(),
+				achievBtn.getY() + 15, highscore_region, vbom, 1.2f) {
+			@Override
+			public void onClick() {
+				// Achievement scene show
+			}
+		};					
+		homeMenuChild.attachChild(highBtn);				
+		this.registerTouchArea(highBtn);
+
+		/* Setting for gameMenuChild */
+		ScaleButton classicBtn = new ScaleButton(0.5f * MainActivity.W,
+				0.4f * MainActivity.H, classic_region, vbom, 1.2f) {
+			@Override
+			public void onClick() {
+				// Game play show: classic mode
+			}
+		};
+		ScaleButton challengeBtn = new ScaleButton(classicBtn.getX(),
+				classicBtn.getY() + 15, challenge_region, vbom, 1.2f) {
+			@Override
+			public void onClick() {
+				// Game play show: challenge mode
+			}
+		};
+		gameMenuChild.attachChild(classicBtn);
+		gameMenuChild.attachChild(challengeBtn);
+		this.registerTouchArea(classicBtn);
+		this.registerTouchArea(challengeBtn);
+		
+		attachChild(gameMenuChild);
+		Log.i("Menu", "" + homeMenuChild.getX() + "," + homeMenuChild.getY());
+	}
+
+	protected void goToHomeScreen() {
+		home_title.setText("NEXtNUMber");
+		home_title.resetSkewCenter();
+
+		homeMenuChild.registerEntityModifier(new MoveModifier(0.25f,
+				homeMenuChild.getX(), homeMenuChild.getY(), 0f, 0f));
+		gameMenuChild
+				.registerEntityModifier(new MoveModifier(0.25f, gameMenuChild
+						.getX(), gameMenuChild.getY(), MainActivity.W, 0f));
+	}
+
+	protected void goToGameScreen(int mode) {
+		if (mode == SINGLE)
+			home_title.setText("singleplayer");
+		else
+			home_title.setText("multiplayer");
+		home_title.resetSkewCenter();
+
+		homeMenuChild
+				.registerEntityModifier(new MoveModifier(0.25f, homeMenuChild
+						.getX(), homeMenuChild.getY(), -MainActivity.W, 0f));
+		gameMenuChild.registerEntityModifier(new MoveModifier(0.25f,
+				gameMenuChild.getX(), gameMenuChild.getY(), 0f, 0f));
 	}
 
 	@Override
 	public void unloadResources() {
-
+		mBitmapTextureAtlas.unload();
+		mGameBitmapTextureAtlas.unload();
+		res.unloadMenuBackground();
+		res.unloadFont();
 	}
 
 	@Override
@@ -175,37 +231,4 @@ public class MenuScene extends AbstractScene implements
 	@Override
 	public void onResume() {
 	}
-
-	private void movetoSingle() {
-		mCurrentScreen = this.singleMenuChild;
-		homeMenuChild.registerEntityModifier(new MoveModifier(0.25f,
-				homeMenuChild.getX(), homeMenuChild.getY(), -camera.getWidth(),
-				0f));
-		singleMenuChild.registerEntityModifier(new MoveModifier(0.25f,
-				singleMenuChild.getX(), singleMenuChild.getY(), 0f, 0f));
-	}
-
-	@Override
-	public boolean onMenuItemClicked(
-			org.andengine.entity.scene.menu.MenuScene arg0, IMenuItem arg1,
-			float arg2, float arg3) {
-		switch (arg1.getID()) {
-		case MENU_PLAY:
-
-			return true;
-		case MENU_OPTIONS:
-			return true;
-		case MULTI_CHALLENGE:
-			return true;
-		case MULTI_CLASSIC:
-			return true;
-		case SINGLE_CHALLENGE:
-			return true;
-		case SINGLE_CLASSIC:
-			return true;
-		default:
-			return false;
-		}
-	}
-
 }

@@ -25,7 +25,6 @@ import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtla
 import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.bitmap.BitmapTextureFormat;
 import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
@@ -60,6 +59,8 @@ public class ResourceManager {
 	public ITextureRegion mOptionRegion;
 
 	public ITextureRegion mMenuBackgroud;
+
+	public Font mFont;
 
 	private ResourceManager() {
 	}
@@ -211,9 +212,9 @@ public class ResourceManager {
 		}
 	}
 
-	public synchronized void loadFonts(Engine pEngine) {
-		Font mFont = FontFactory.create(pEngine.getFontManager(),
-				pEngine.getTextureManager(), 256, 256,
+	public synchronized void loadFonts() {
+		mFont = FontFactory.create(engine.getFontManager(),
+				engine.getTextureManager(), 256, 256,
 				Typeface.create(Typeface.DEFAULT, Typeface.NORMAL), 32f, true,
 				Color.WHITE_ABGR_PACKED_INT);
 		mFont.load();
@@ -285,11 +286,36 @@ public class ResourceManager {
 		System.gc();
 	}
 
+	public synchronized void unloadMenuBackground() {
+		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mMenuBackgroud
+				.getTexture();
+		mBitmapTextureAtlas.unload();
+		System.gc();
+	}
+
+	public synchronized void unloadAchievement() {
+		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mAchivementRegion
+				.getTexture();
+		mBitmapTextureAtlas.unload();
+		System.gc();
+	}
+
+	public synchronized void unloadHighscore() {
+		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mHighscoreRegion
+				.getTexture();
+		mBitmapTextureAtlas.unload();
+		System.gc();
+	}
+
 	public synchronized void unloadSplash() {
 		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) splashRegion
 				.getTexture();
 		mBitmapTextureAtlas.unload();
 		System.gc();
+	}
+	
+	public synchronized void unloadFont() {
+		mFont.unload();
 	}
 
 	// public void unloadSplashResources() {

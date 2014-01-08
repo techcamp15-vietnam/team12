@@ -31,7 +31,7 @@ public class SplashScene extends AbstractScene {
 			protected void onModifierFinished(IEntity pItem) {
 				Log.d("Splash", "Changing splash!");
 				super.onModifierFinished(pItem);
-				//splash.setVisible(false);
+				splash.setVisible(false);
 			}
 		});		
 	}
