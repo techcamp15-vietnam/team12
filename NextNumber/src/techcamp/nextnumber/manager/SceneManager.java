@@ -20,6 +20,11 @@ public class SceneManager {
 
 	private static final SceneManager INSTANCE = new SceneManager();
 
+	protected static final int SINGLE = MenuScene.SINGLE;
+	protected static final int MULTI = MenuScene.MULTI;
+	protected static final int CLASSIC = MenuScene.CLASSIC;
+	protected static final int CHALLENGE = MenuScene.CHALLENGE;
+
 	private ResourceManager res = ResourceManager.getInstance();
 	private AbstractScene currentScene;
 	private LoadingScene loadingScene;
@@ -30,18 +35,18 @@ public class SceneManager {
 	/**
 	 * Shows splash screen and loads resources on background
 	 */
-	public void showSplash() {		
-		 final SplashScene splash = new SplashScene();
-		 setCurrentScene(splash);
-		 splash.loadResources();
-		 splash.create();
-		 res.engine.setScene(splash);
-		Log.i("Scene", "show SPLASH");	
+	public void showSplash() {
+		final SplashScene splash = new SplashScene();
+		setCurrentScene(splash);
+		splash.loadResources();
+		splash.create();
+		res.engine.setScene(splash);
+		Log.i("Scene", "show SPLASH");
 
 		new AsyncTask<Void, Void, Void>() {
 			@Override
 			protected Void doInBackground(Void... params) {
-				long timestamp = System.currentTimeMillis();				
+				long timestamp = System.currentTimeMillis();
 
 				MenuScene menu = new MenuScene();
 				menu.loadResources();
@@ -49,7 +54,8 @@ public class SceneManager {
 				loadingScene = new LoadingScene();
 				loadingScene.loadResources();
 				loadingScene.create();
-				// we want to show the splash at least SPLASH_DURATION miliseconds
+				// we want to show the splash at least SPLASH_DURATION
+				// miliseconds
 				long elapsed = System.currentTimeMillis() - timestamp;
 				if (elapsed < MainActivity.SPLASH_DURATION) {
 					try {
@@ -65,11 +71,11 @@ public class SceneManager {
 				return null;
 			}
 		}.execute();
-	
+
 	}
-	
-	public void showGameClassicPlay(){
-		
+
+	public void showGameClassicPlay() {
+
 	}
 
 	public void showScene(Class<? extends AbstractScene> sceneClazz) {
@@ -119,6 +125,20 @@ public class SceneManager {
 
 	private void setCurrentScene(AbstractScene currentScene) {
 		this.currentScene = currentScene;
+	}
+
+	/**
+	 * show Game Scene mode SINGLE/MULTI
+	 * 
+	 * @param mode
+	 */
+	public static void showGameMode(int mode) {
+
+	}
+
+	public static void showMultiMenu(int mode) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

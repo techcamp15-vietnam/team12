@@ -20,6 +20,7 @@ import org.andengine.opengl.texture.bitmap.BitmapTextureFormat;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
 import techcamp.nextnumber.MainActivity;
+import techcamp.nextnumber.manager.SceneManager;
 import techcamp.nextnumber.utils.ScaleButton;
 import android.util.Log;
 
@@ -36,10 +37,13 @@ public class MenuScene extends AbstractScene {
 	private Text home_title;
 	private Text single_title;
 	private Text multi_title;
+	private Text game_title;
 	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
 	private BuildableBitmapTextureAtlas mGameBitmapTextureAtlas;
-	protected static final int SINGLE = 0;
-	protected static final int MULTI = 1;
+	public static final int SINGLE = 0;
+	public static final int MULTI = 1;
+	public static final int CLASSIC = 2;
+	public static final int CHALLENGE = 3;
 
 	// Load resources
 	@Override
@@ -86,7 +90,7 @@ public class MenuScene extends AbstractScene {
 				res.mFont, "Singleplayer", vbom);
 		multi_title = new Text(MainActivity.W * 0.4f, MainActivity.H * 0.1f,
 				res.mFont, "Multiplayer", vbom);
-
+		game_title = single_title;
 		try {
 			mBitmapTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
@@ -108,89 +112,105 @@ public class MenuScene extends AbstractScene {
 		attachChild(new Sprite(0, 0, res.mMenuBackgroud, vbom));
 
 		homeMenuChild = new Entity() {
-			public boolean first = false;
-
-			@Override
-			protected void onManagedUpdate(final float pSecondsElapsed) {
-				super.onManagedUpdate(pSecondsElapsed);
-				if (!this.first) {
-					Log.i("Menu", "onManageUpdate");
-					this.first = true;
-					this.registerEntityModifier(new MoveModifier(0.25f, 0f,
-							MainActivity.H, 0f, 0f));
-				}
-			}
+			// public boolean first = false;
+			//
+			// @Override
+			// protected void onManagedUpdate(final float pSecondsElapsed) {
+			// super.onManagedUpdate(pSecondsElapsed);
+			// if (!this.first) {
+			// Log.i("Menu", "onManageUpdate");
+			// this.first = true;
+			// this.registerEntityModifier(new MoveModifier(0.25f, 0f,
+			// MainActivity.H, 0f, 0f));
+			// }
+			// }
 		};
-		gameMenuChild = new Entity(MainActivity.W, 0f);
+		gameMenuChild = new Entity();
 		Log.i("Menu", "load entity");
 
 		homeMenuChild.attachChild(home_title);
-		ScaleButton playSingleBtn = new ScaleButton(0.75f * MainActivity.W,
-				0.3f * MainActivity.H, play_single_region, vbom, 1.2f) {
+		ScaleButton playSingleBtn = new ScaleButton(0.5f * MainActivity.W
+				- play_single_region.getWidth() / 2, 0.3f * MainActivity.H,
+				play_single_region, vbom, 1.2f) {
 			@Override
 			public void onClick() {
+				Log.i("Menu", "click single");
 				goToGameScreen(SINGLE);
 			}
 		};
-		homeMenuChild.attachChild(playSingleBtn);		
-		this.registerTouchArea(playSingleBtn);	
+		homeMenuChild.attachChild(playSingleBtn);
+		this.registerTouchArea(playSingleBtn);
 		attachChild(homeMenuChild);
 		ScaleButton playMultiBtn = new ScaleButton(playSingleBtn.getX(),
-				playSingleBtn.getY() + 15, play_multi_region, vbom, 1.2f) {
+				playSingleBtn.getY() + playSingleBtn.getHeight() + 25,
+				play_multi_region, vbom, 1.2f) {
 			@Override
 			public void onClick() {
+				Log.i("Menu", "click multi");
 				goToGameScreen(MULTI);
 			}
 		};
 		homeMenuChild.attachChild(playMultiBtn);
 		this.registerTouchArea(playMultiBtn);
-		ScaleButton achievBtn = new ScaleButton(playMultiBtn.getX(),
-				playMultiBtn.getY() + 15, achievement_region, vbom, 1.2f) {
+		ScaleButton achievBtn = new ScaleButton(playSingleBtn.getX(),
+				playMultiBtn.getY() + playMultiBtn.getHeight() + 25,
+				achievement_region, vbom, 1.2f) {
 			@Override
 			public void onClick() {
 				// Achievement scene show
 			}
 		};
-		homeMenuChild.attachChild(achievBtn);		
+		homeMenuChild.attachChild(achievBtn);
 		this.registerTouchArea(achievBtn);
-		ScaleButton highBtn = new ScaleButton(achievBtn.getX(),
-				achievBtn.getY() + 15, highscore_region, vbom, 1.2f) {
+		ScaleButton highBtn = new ScaleButton(playSingleBtn.getX(),
+				achievBtn.getY() + achievBtn.getHeight() + 25,
+				highscore_region, vbom, 1.2f) {
 			@Override
 			public void onClick() {
 				// Achievement scene show
 			}
-		};					
-		homeMenuChild.attachChild(highBtn);				
+		};
+		homeMenuChild.attachChild(highBtn);
 		this.registerTouchArea(highBtn);
 
 		/* Setting for gameMenuChild */
-		ScaleButton classicBtn = new ScaleButton(0.5f * MainActivity.W,
+		gameMenuChild.attachChild(game_title);
+		ScaleButton classicBtn = new ScaleButton(playSingleBtn.getX(),
 				0.4f * MainActivity.H, classic_region, vbom, 1.2f) {
 			@Override
 			public void onClick() {
 				// Game play show: classic mode
-			}
-		};
-		ScaleButton challengeBtn = new ScaleButton(classicBtn.getX(),
-				classicBtn.getY() + 15, challenge_region, vbom, 1.2f) {
-			@Override
-			public void onClick() {
-				// Game play show: challenge mode
+				if (game_title == single_title) {
+					SceneManager.showGameMode(SINGLE);
+				} else {
+					SceneManager.showMultiMenu(CLASSIC);
+				}
 			}
 		};
 		gameMenuChild.attachChild(classicBtn);
-		gameMenuChild.attachChild(challengeBtn);
 		this.registerTouchArea(classicBtn);
+		ScaleButton challengeBtn = new ScaleButton(classicBtn.getX(),
+				classicBtn.getY() + classicBtn.getHeight() + 25,
+				challenge_region, vbom, 1.2f) {
+			@Override
+			public void onClick() {
+				// Game play show: challenge mode
+				if (game_title == single_title) {
+					SceneManager.showGameMode(SINGLE);
+				} else {
+					SceneManager.showMultiMenu(CHALLENGE);
+				}
+			}
+		};
+		gameMenuChild.attachChild(challengeBtn);
 		this.registerTouchArea(challengeBtn);
-		
+
 		attachChild(gameMenuChild);
 		Log.i("Menu", "" + homeMenuChild.getX() + "," + homeMenuChild.getY());
 	}
 
 	protected void goToHomeScreen() {
-		home_title.setText("NEXtNUMber");
-		home_title.resetSkewCenter();
-
+		Log.i("Menu", "Go to Home");
 		homeMenuChild.registerEntityModifier(new MoveModifier(0.25f,
 				homeMenuChild.getX(), homeMenuChild.getY(), 0f, 0f));
 		gameMenuChild
@@ -199,17 +219,19 @@ public class MenuScene extends AbstractScene {
 	}
 
 	protected void goToGameScreen(int mode) {
-		if (mode == SINGLE)
-			home_title.setText("singleplayer");
-		else
-			home_title.setText("multiplayer");
-		home_title.resetSkewCenter();
-
+		if (mode == SINGLE) {
+			if (game_title != single_title)
+				game_title = single_title;
+		} else if (mode == MULTI) {
+			if (game_title != multi_title) {
+				game_title = multi_title;
+			}
+		}
 		homeMenuChild
 				.registerEntityModifier(new MoveModifier(0.25f, homeMenuChild
-						.getX(), homeMenuChild.getY(), -MainActivity.W, 0f));
+						.getX(), -MainActivity.W, homeMenuChild.getY(), 0f));
 		gameMenuChild.registerEntityModifier(new MoveModifier(0.25f,
-				gameMenuChild.getX(), gameMenuChild.getY(), 0f, 0f));
+				gameMenuChild.getX(), 0f, gameMenuChild.getY(), 0f));
 	}
 
 	@Override
