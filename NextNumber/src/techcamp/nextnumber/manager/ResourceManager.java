@@ -21,14 +21,17 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
+import org.andengine.opengl.texture.atlas.buildable.BuildableTextureAtlas;
 import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
 import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.bitmap.BitmapTextureFormat;
 import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
 import techcamp.nextnumber.MainActivity;
+import techcamp.nextnumber.scenes.GameScene;
 import android.graphics.Typeface;
 import android.util.Log;
 
@@ -64,7 +67,39 @@ public class ResourceManager {
 
 	public Font mFont;
 
-	private ResourceManager() {
+	public ITextureRegion mGameRegion;
+
+	public ITextureRegion mScoreRegion;
+
+	public ITextureRegion mClockRegion;
+
+	public ITextureRegion mSquare;
+
+	private BuildableBitmapTextureAtlas splashTextureAtlas;
+
+	private BuildableBitmapTextureAtlas mGameBitmapTextureAtlas;
+
+	private BuildableBitmapTextureAtlas mClassicBitmapTextureAtlas;
+
+	public ITextureRegion mSquareBonusRegion;
+
+	private BuildableBitmapTextureAtlas mChallengeBitmapTextureAtlas;
+
+	public TextureRegion mSquareDoubleRegion;
+
+	public TextureRegion mSquareTripleRegion;
+
+	public TextureRegion mSquareBlinkRegion;
+
+	private BuildableBitmapTextureAtlas highTextureAtlas;
+
+	private BuildableBitmapTextureAtlas achievTextureAtlas;
+
+	private BuildableBitmapTextureAtlas mMenuBitmapTextureAtlas;
+
+	private BuildableBitmapTextureAtlas mBackgroundBitmapTextureAtlas;
+
+	public ResourceManager() {
 	}
 
 	public static ResourceManager getInstance() {
@@ -83,7 +118,7 @@ public class ResourceManager {
 	// splash
 	public void loadSplashResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		BuildableBitmapTextureAtlas splashTextureAtlas = new BuildableBitmapTextureAtlas(
+		splashTextureAtlas = new BuildableBitmapTextureAtlas(
 				activity.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
 
@@ -103,76 +138,91 @@ public class ResourceManager {
 		}
 	}
 
-	public synchronized void loadClassicGameResources() {
-		// Set our game assets folder in "assets/gfx/game/"
+	private synchronized void loadGameResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
+		mGameBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
 				activity.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
-		mClassicBackgroundRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
-						"classic_game_background.png");
+		mGameRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				mGameBitmapTextureAtlas, activity.getAssets(), "game.png");
+
 		try {
-			mBitmapTextureAtlas
+			mGameBitmapTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
 							0, 0, 0));
-			mBitmapTextureAtlas.load();
+			mGameBitmapTextureAtlas.load();
+		} catch (TextureAtlasBuilderException e) {
+			Log.e("Resource", e.getMessage());
+		}
+	}
+
+	public synchronized void loadClassicGameResources() {
+		loadGameResources();
+		// Set our game assets folder in "assets/gfx/game/"
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
+		mClassicBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
+				activity.getTextureManager(), MainActivity.W, MainActivity.H,
+				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
+		mClockRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				mClassicBitmapTextureAtlas, activity.getAssets(), "clock.png");
+		mSquare = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				mClassicBitmapTextureAtlas, activity.getAssets(), "square.png");
+		try {
+			mClassicBitmapTextureAtlas
+					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
+							0, 0, 0));
+			mClassicBitmapTextureAtlas.load();
 		} catch (TextureAtlasBuilderException e) {
 			Log.e("Resource", e.getMessage());
 		}
 	}
 
 	public synchronized void loadChallengeGameResources() {
+		loadGameResources();
 		// Set our game assets folder in "assets/gfx/game/"
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
+		mChallengeBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
 				engine.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
-		mChallengeBackgroundRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
-						"challenge_game_background.png");
+		mScoreRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mChallengeBitmapTextureAtlas,
+						activity.getAssets(), "clock.png");
+		mSquareBonusRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mChallengeBitmapTextureAtlas,
+						activity.getAssets(), "square_bonus.png");
+		mSquareDoubleRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mChallengeBitmapTextureAtlas,
+						activity.getAssets(), "square_double.png");
+		mSquareTripleRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mChallengeBitmapTextureAtlas,
+						activity.getAssets(), "square_triple.png");
+		mSquareBlinkRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mChallengeBitmapTextureAtlas,
+						activity.getAssets(), "square_blink.png");
 		try {
-			mBitmapTextureAtlas
+			mChallengeBitmapTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
 							0, 0, 0));
-			mBitmapTextureAtlas.load();
+			mChallengeBitmapTextureAtlas.load();
 		} catch (TextureAtlasBuilderException e) {
 			Log.e("Resource", e.getMessage());
 		}
 	}
 
-	public synchronized void loadOptionResources() {
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		BuildableBitmapTextureAtlas splashTextureAtlas = new BuildableBitmapTextureAtlas(
-				engine.getTextureManager(), MainActivity.W, MainActivity.H,
-				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
-		mOptionRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				splashTextureAtlas, activity.getAssets(), "option.png");
-		try {
-			splashTextureAtlas
-					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
-							0, 0, 0));
-			splashTextureAtlas.load();
-
-		} catch (final TextureAtlasBuilderException e) {
-			throw new RuntimeException("Error while loading Splash textures", e);
-		}
-	}
-
 	public synchronized void loadMenuBackground() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
+		mMenuBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
 				engine.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
 		mMenuBackground = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
-						"menu_background.png");
+				.createFromAsset(mMenuBitmapTextureAtlas, activity,
+						"highscore.png");
 
 		try {
-			mBitmapTextureAtlas
+			mMenuBitmapTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
 							0, 0, 0));
-			mBitmapTextureAtlas.load();
+			mMenuBitmapTextureAtlas.load();
 		} catch (final TextureAtlasBuilderException e) {
 			Log.e("Resource", e.getMessage());
 		}
@@ -180,16 +230,16 @@ public class ResourceManager {
 
 	public synchronized void loadHighscoreResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		BuildableBitmapTextureAtlas splashTextureAtlas = new BuildableBitmapTextureAtlas(
+		highTextureAtlas = new BuildableBitmapTextureAtlas(
 				engine.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
 		mHighscoreRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(splashTextureAtlas, activity, "highscore.png");
+				.createFromAsset(highTextureAtlas, activity, "highscore.png");
 		try {
-			splashTextureAtlas
+			highTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
 							0, 0, 0));
-			splashTextureAtlas.load();
+			highTextureAtlas.load();
 
 		} catch (final TextureAtlasBuilderException e) {
 			throw new RuntimeException("Error while loading Splash textures", e);
@@ -198,16 +248,16 @@ public class ResourceManager {
 
 	public synchronized void loadAchivementResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		BuildableBitmapTextureAtlas splashTextureAtlas = new BuildableBitmapTextureAtlas(
+		achievTextureAtlas = new BuildableBitmapTextureAtlas(
 				engine.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
 		mAchivementRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(splashTextureAtlas, activity, "achive.png");
+				.createFromAsset(highTextureAtlas, activity, "achive.png");
 		try {
-			splashTextureAtlas
+			achievTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
 							0, 0, 0));
-			splashTextureAtlas.load();
+			achievTextureAtlas.load();
 
 		} catch (final TextureAtlasBuilderException e) {
 			throw new RuntimeException("Error while loading Splash textures", e);
@@ -216,18 +266,18 @@ public class ResourceManager {
 
 	public synchronized void loadLoadingBackground() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
+		mBackgroundBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
 				engine.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
 		mBackgroundRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
-						"background.png");
+				.createFromAsset(mBackgroundBitmapTextureAtlas,
+						activity.getAssets(), "background.png");
 
 		try {
-			mBitmapTextureAtlas
+			mBackgroundBitmapTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
 							0, 0, 0));
-			mBitmapTextureAtlas.load();
+			mBackgroundBitmapTextureAtlas.load();
 		} catch (final TextureAtlasBuilderException e) {
 			Log.e("Resource", e.getMessage());
 		}
@@ -286,69 +336,50 @@ public class ResourceManager {
 		}
 	}
 
+	private synchronized void unloadGame() {
+		if (mGameBitmapTextureAtlas != null)
+			mGameBitmapTextureAtlas.unload();
+	}
+
 	public synchronized void unloadClassicGame() {
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mClassicBackgroundRegion
-				.getTexture();
-		mBitmapTextureAtlas.unload();
+		unloadGame();
+		mClassicBitmapTextureAtlas.unload();
 		System.gc();
 	}
 
 	public synchronized void unloadChallengeGame() {
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mChallengeBackgroundRegion
-				.getTexture();
-		mBitmapTextureAtlas.unload();
-		System.gc();
-	}
-
-	public synchronized void unloadOption() {
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mOptionRegion
-				.getTexture();
-		mBitmapTextureAtlas.unload();
+		unloadGame();
+		mChallengeBitmapTextureAtlas.unload();
 		System.gc();
 	}
 
 	public synchronized void unloadMenuBackground() {
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mMenuBackground
-				.getTexture();
-		mBitmapTextureAtlas.unload();
+		mMenuBitmapTextureAtlas.unload();
 		System.gc();
 	}
 
 	public synchronized void unloadAchievement() {
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mAchivementRegion
-				.getTexture();
-		mBitmapTextureAtlas.unload();
+		achievTextureAtlas.unload();
 		System.gc();
 	}
 
 	public synchronized void unloadBackground() {
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mBackgroundRegion
-				.getTexture();
-		mBitmapTextureAtlas.unload();
+		mBackgroundBitmapTextureAtlas.unload();
 		System.gc();
 	}
 
 	public synchronized void unloadHighscore() {
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) mHighscoreRegion
-				.getTexture();
-		mBitmapTextureAtlas.unload();
+		highTextureAtlas.unload();
 		System.gc();
 	}
 
 	public synchronized void unloadSplash() {
-		BuildableBitmapTextureAtlas mBitmapTextureAtlas = (BuildableBitmapTextureAtlas) splashRegion
-				.getTexture();
-		mBitmapTextureAtlas.unload();
+		splashTextureAtlas.unload();
 		System.gc();
 	}
 
 	public synchronized void unloadFont() {
 		mFont.unload();
-	}
-
-	public void loadGameResources() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	// public void unloadSplashResources() {
