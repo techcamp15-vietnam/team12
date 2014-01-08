@@ -34,9 +34,7 @@ public class MenuScene extends AbstractScene {
 	private ITextureRegion challenge_region;
 	private Entity homeMenuChild;
 	private Entity gameMenuChild;
-	private Text home_title;
-	private Text single_title;
-	private Text multi_title;
+	private Text home_title;	
 	private Text game_title;
 	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
 	private BuildableBitmapTextureAtlas mGameBitmapTextureAtlas;
@@ -44,6 +42,7 @@ public class MenuScene extends AbstractScene {
 	public static final int MULTI = 1;
 	public static final int CLASSIC = 2;
 	public static final int CHALLENGE = 3;
+	private static int modePlayer = SINGLE;
 
 	// Load resources
 	@Override
@@ -51,6 +50,8 @@ public class MenuScene extends AbstractScene {
 		// load Background
 		res.loadMenuBackground();
 		res.loadFonts();
+		res.loadSounds();
+		res.loadMusic();
 
 		// load home menu
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/menu/");
@@ -84,13 +85,26 @@ public class MenuScene extends AbstractScene {
 		Log.i("Menu", "OK! load game");
 
 		// Title
-		home_title = new Text(MainActivity.W * 0.4f, MainActivity.H * 0.1f,
-				res.mFont, "NEXtNUMber", vbom);
-		single_title = new Text(MainActivity.W * 0.4f, MainActivity.H * 0.1f,
-				res.mFont, "Singleplayer", vbom);
-		multi_title = new Text(MainActivity.W * 0.4f, MainActivity.H * 0.1f,
-				res.mFont, "Multiplayer", vbom);
-		game_title = single_title;
+		home_title = new Text(0, MainActivity.H * 0.1f, res.mBigHeaderFont,
+				"NextNumber", vbom);
+		game_title = new Text(0, MainActivity.H * 0.1f, res.mBigHeaderFont,
+				"Singleplayer", vbom) {
+			int currentMode = SINGLE;
+
+			@Override
+			protected void onManagedUpdate(float pSecondsElapsed) {
+				if (modePlayer != currentMode) {
+					Log.i("Update", "" + modePlayer + "," + currentMode);
+					currentMode = modePlayer;
+					if (modePlayer == SINGLE) {
+						this.setText("Singleplayer");
+					} else {
+						this.setText("Multiplayer");
+					}
+				}
+			}
+		};
+
 		try {
 			mBitmapTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
@@ -108,8 +122,15 @@ public class MenuScene extends AbstractScene {
 	@Override
 	public void create() {
 		Log.i("Menu", "create");
+		res.resumeMusic();
 		// set Background
 		attachChild(new Sprite(0, 0, res.mMenuBackground, vbom));
+
+		// align for text
+		home_title.setPosition(MainActivity.W / 2 - home_title.getWidth() / 2,
+				home_title.getY());
+		game_title.setPosition(MainActivity.W / 2 - game_title.getWidth() / 2,
+				game_title.getY());
 
 		homeMenuChild = new Entity() {
 			public boolean first = false;
@@ -120,7 +141,7 @@ public class MenuScene extends AbstractScene {
 				if (!this.first) {
 					Log.i("Menu", "onManageUpdate");
 					this.first = true;
-					this.registerEntityModifier(new MoveModifier(0.25f, 0f, 0f,
+					this.registerEntityModifier(new MoveModifier(0.5f, 0f, 0f,
 							MainActivity.H, 0f));
 				}
 			}
@@ -157,7 +178,7 @@ public class MenuScene extends AbstractScene {
 				achievement_region, vbom, 1.2f) {
 			@Override
 			public void onClick() {
-				// Achievement scene show				
+				// Achievement scene show
 			}
 		};
 		homeMenuChild.attachChild(achievBtn);
@@ -180,7 +201,7 @@ public class MenuScene extends AbstractScene {
 			@Override
 			public void onClick() {
 				// Game play show: classic mode
-				if (game_title == single_title) {
+				if (modePlayer == SINGLE) {
 					SceneManager.getInstance().showGameMode(CLASSIC, SINGLE);
 				} else {
 					SceneManager.getInstance().showMultiMenu(CLASSIC);
@@ -195,7 +216,7 @@ public class MenuScene extends AbstractScene {
 			@Override
 			public void onClick() {
 				// Game play show: challenge mode
-				if (game_title == single_title) {
+				if (modePlayer == SINGLE) {
 					SceneManager.getInstance().showGameMode(CHALLENGE, SINGLE);
 				} else {
 					SceneManager.getInstance().showMultiMenu(CHALLENGE);
@@ -219,14 +240,8 @@ public class MenuScene extends AbstractScene {
 	}
 
 	protected void goToGameScreen(int mode) {
-		if (mode == SINGLE) {
-			if (game_title != single_title)
-				game_title = single_title;
-		} else if (mode == MULTI) {
-			if (game_title != multi_title) {
-				game_title = multi_title;
-			}
-		}
+		modePlayer = mode;
+		Log.i("Update", "mode - " + mode);
 		homeMenuChild
 				.registerEntityModifier(new MoveModifier(0.25f, homeMenuChild
 						.getX(), -MainActivity.W, homeMenuChild.getY(), 0f));

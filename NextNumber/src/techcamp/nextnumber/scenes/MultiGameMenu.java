@@ -6,17 +6,23 @@
 
 package techcamp.nextnumber.scenes;
 
-import org.andengine.util.color.Color;
+import org.andengine.entity.sprite.Sprite;
+
 
 public class MultiGameMenu extends AbstractScene{
 
 	@Override
-	public void loadResources() {		
+	public void loadResources() {	
+		res.loadMenuBackground();
+		res.loadFonts();
+		res.loadMusic();
+		res.loadSounds();
 	}
 
 	@Override
 	public void create() {
-		getBackground().setColor(Color.CYAN);
+		attachChild(new Sprite(0,0,res.mMenuBackground,vbom));		
+		
 	}
 
 	@Override

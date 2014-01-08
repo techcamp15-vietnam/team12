@@ -1,13 +1,21 @@
+/**
+ * @author pvhau
+ * @team TechCamp G12
+ * @date 07/01
+ */
+
 package techcamp.nextnumber.utils;
 
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.ScaleModifier;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import techcamp.nextnumber.manager.ResourceManager;
+import android.util.Log;
 
 public abstract class ScaleButton extends Sprite {
 
@@ -16,21 +24,30 @@ public abstract class ScaleButton extends Sprite {
 	private boolean CLICKED = false;
 	private boolean SCALED = false;
 	private float scale = 1.0f;
+	private Text text = null;
 
 	public ScaleButton(float pX, float pY, ITextureRegion pTextureRegion,
 			VertexBufferObjectManager vbom, float scale) {
 		super(pX, pY, pTextureRegion, vbom);
 		this.scale = scale;
 	}
-	
+
+	public ScaleButton(float pX, float pY, ITextureRegion pTextureRegion,
+			VertexBufferObjectManager vbom, float scale, Text text) {
+		this(pX, pY, pTextureRegion, vbom, scale);
+		this.text = text;
+		this.attachChild(text);
+		text.setPosition(this.getWidth() / 2 - text.getWidth() / 2,
+				this.getHeight() / 2 - text.getHeight() / 2);
+	}
+
 	public abstract void onClick();
 
 	@Override
 	protected void onManagedUpdate(final float pSecondsElapsed) {
 		super.onManagedUpdate(pSecondsElapsed);
 		if (!SCALED && TOUCHED) {
-			this.registerEntityModifier(new ScaleModifier(
-					0.05f, 1f, scale){
+			this.registerEntityModifier(new ScaleModifier(0.05f, 1f, scale) {
 				@Override
 				protected void onModifierFinished(final IEntity pItem) {
 					super.onModifierFinished(pItem);
@@ -38,25 +55,19 @@ public abstract class ScaleButton extends Sprite {
 				}
 			});
 		} else if (SCALED && !TOUCHED) {
-			this.registerEntityModifier(new ScaleModifier(
-					0.05f, scale, 1f) {
+			this.registerEntityModifier(new ScaleModifier(0.05f, scale, 1f) {
 				@Override
 				protected void onModifierFinished(final IEntity pItem) {
 					super.onModifierFinished(pItem);
 					SCALED = false;
 					if (CLICKED) {
-						onClick();
 						CLICKED = false;
+						onClick();
 					}
-				}
-
-				private void onClick() {
-					// TODO Auto-generated method stub
-					
 				}
 			});
 			SCALED = false;
-		}				
+		}
 	}
 
 	@Override
@@ -82,12 +93,15 @@ public abstract class ScaleButton extends Sprite {
 				if (TOUCH_STARTED && !TOUCHED)
 					TOUCHED = true;
 			}
-		} else if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP
-				&& TOUCHED && TOUCH_STARTED) {
-			TOUCHED = false;
-			CLICKED = true;
-			TOUCH_STARTED = false;
-			ResourceManager.getInstance().playSound();
+		} else {
+			Log.i("ScaleButton", "up <<<" + TOUCH_STARTED + "|" + TOUCHED);
+			if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP && TOUCHED
+					&& TOUCH_STARTED) {
+				TOUCHED = false;
+				CLICKED = true;
+				TOUCH_STARTED = false;
+				ResourceManager.getInstance().playSound();
+			}
 		}
 		return true;
 	}
