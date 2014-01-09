@@ -101,12 +101,15 @@ public class ClassicGameScene extends GameScene {
 						if (this.value == C.nextint) {
 							if (C.nextint == LIMIT_SIZE) {
 								started = false;
+								this.setAlpha(.5f);
+								this.setEnable(false);
 								finish();
-							}
-							C.nextint++;
+							} else {
+								C.nextint++;
 
-							this.setAlpha(.5f);
-							this.setEnable(false);
+								this.setAlpha(.5f);
+								this.setEnable(false);
+							}
 						}
 					}
 
@@ -127,11 +130,11 @@ public class ClassicGameScene extends GameScene {
 		ScaleButton start = new ScaleButton(0, 0, startRegion, vbom, 1.0f) {
 			@Override
 			public void onClick() {
-				ClassicGameScene.getIntance().unregisterTouchArea(this);				
+				ClassicGameScene.getIntance().unregisterTouchArea(this);
 				this.registerEntityModifier(new MoveModifier(.5f, 0,
 						MainActivity.W * 1.5f, 0, 0) {
 					@Override
-					protected void onModifierFinished(IEntity pItem) {						
+					protected void onModifierFinished(IEntity pItem) {
 						setStartTouch();
 					};
 				});
@@ -154,7 +157,9 @@ public class ClassicGameScene extends GameScene {
 	private void setStartTouch() {
 		Log.i("Game", "" + table.getChildCount());
 		for (int i = 0; i < table.getChildCount(); i++) {
-			this.registerTouchArea((Square) table.getChildByIndex(i));			
+			this.registerTouchArea((Square) table.getChildByIndex(i));
+			((Square) table.getChildByIndex(i)).getText().setVisible(true);
+			Log.i("Game", "visible");
 		}
 		started = true;
 	}
@@ -174,8 +179,8 @@ public class ClassicGameScene extends GameScene {
 						long i = (second - current) % 10;
 						current += 10 * i;
 						t += i;
-						this.setText(String.format("%02d:%02d.%02d", t / 10000,
-								t / 100, t % 100));
+						this.setText(String.format("%02d:%02d.%02d", t / 6000,
+								(t / 100) % 60, t % 100));
 					}
 				}
 				super.onManagedUpdate(pSecondsElapsed);

@@ -15,18 +15,20 @@ import org.andengine.opengl.font.Font;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
+import android.util.Log;
+
 import techcamp.nextnumber.manager.ResourceManager;
 
 public abstract class ScaleButton extends Sprite {
 
-	private boolean TOUCH_STARTED = false;
-	private boolean TOUCHED = false;
-	private boolean CLICKED = false;
-	private boolean SCALED = false;
-	private boolean TOUCH_ENABLE = true;
-	private float scale = 1.0f;
+	protected boolean TOUCH_STARTED = false;
+	protected boolean TOUCHED = false;
+	protected boolean CLICKED = false;
+	protected boolean SCALED = false;
+	protected boolean TOUCH_ENABLE = true;
+	protected float scale = 1.0f;
 	private Text text = null;
-	private int soundType = 1;
+	protected int soundType = 1;
 	private static boolean sizeFollowText = false;
 
 	public ScaleButton(float pX, float pY, ITextureRegion pTextureRegion,
@@ -55,12 +57,13 @@ public abstract class ScaleButton extends Sprite {
 	public Text getText() {
 		return this.text;
 	}
-	
+
 	/**
 	 * #control allow change size depend on text or not
+	 * 
 	 * @param followText
 	 */
-	public static void setSizeFollowText(boolean followText){
+	public static void setSizeFollowText(boolean followText) {
 		sizeFollowText = followText;
 	}
 
@@ -73,13 +76,13 @@ public abstract class ScaleButton extends Sprite {
 	}
 
 	public abstract void onClick();
-	
-	/*	 
-	 * @see org.andengine.entity.shape.RectangularShape#getWidth()
-	 * #modify for suitable with text attached
+
+	/*
+	 * @see org.andengine.entity.shape.RectangularShape#getWidth() #modify for
+	 * suitable with text attached
 	 */
 	@Override
-	public float getWidth(){
+	public float getWidth() {
 		if (!sizeFollowText)
 			return super.getWidth();
 		if (text != null)
@@ -87,12 +90,12 @@ public abstract class ScaleButton extends Sprite {
 		else
 			return super.getWidth();
 	}
-	
+
 	/**
-	 * #modify for suitable with text attached 
+	 * #modify for suitable with text attached
 	 */
 	@Override
-	public float getHeight(){
+	public float getHeight() {
 		if (!sizeFollowText)
 			return super.getHeight();
 		if (text != null)
@@ -111,6 +114,9 @@ public abstract class ScaleButton extends Sprite {
 					protected void onModifierFinished(final IEntity pItem) {
 						super.onModifierFinished(pItem);
 						SCALED = true;
+						if (!TOUCHED) {
+
+						}
 					}
 				});
 			} else if (SCALED && !TOUCHED) {
@@ -135,15 +141,17 @@ public abstract class ScaleButton extends Sprite {
 			float pTouchAreaLocalX, float pTouchAreaLocalY) {
 		if (TOUCH_ENABLE) {
 			if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_DOWN) {
+//				Log.i("Touch", "Down");
 				if (pTouchAreaLocalX > this.getWidth() || pTouchAreaLocalX < 0f
 						|| pTouchAreaLocalY > this.getHeight()
 						|| pTouchAreaLocalY < 0f) {
 					TOUCH_STARTED = false;
 				} else {
 					TOUCH_STARTED = true;
-					TOUCHED = true;
-				}				
+				}
+				TOUCHED = true;
 			} else if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_MOVE) {
+//				Log.i("Touch", "Move");
 				if (pTouchAreaLocalX > this.getWidth() || pTouchAreaLocalX < 0f
 						|| pTouchAreaLocalY > this.getHeight()
 						|| pTouchAreaLocalY < 0f) {
@@ -154,14 +162,14 @@ public abstract class ScaleButton extends Sprite {
 					if (TOUCH_STARTED && !TOUCHED)
 						TOUCHED = true;
 				}
-			} else {
-				if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP
-						&& TOUCHED && TOUCH_STARTED) {
+			} else if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP) {
+//					Log.i("Touch","Up"+SCALED+","+TOUCHED);
 					TOUCHED = false;
 					CLICKED = true;
 					TOUCH_STARTED = false;
-						ResourceManager.getInstance().playSound(soundType);
-				}
+					ResourceManager.getInstance().playSound(soundType);				
+			} else {
+//				Log.i("Another",""+pSceneTouchEvent.getAction());
 			}
 		}
 		return true;
