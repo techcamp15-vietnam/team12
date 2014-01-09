@@ -17,8 +17,8 @@ import techcamp.nextnumber.utils.Square;
 import android.util.Log;
 
 public class ClassicGameScene extends GameScene {
-	
-	private boolean started = false;	
+
+	private boolean started = false;
 	private Entity table;
 	private Text next;
 	private Text timeText;
@@ -29,7 +29,7 @@ public class ClassicGameScene extends GameScene {
 	public void loadResources() {
 		GameScene.modeGameplay = GameScene.CLASSIC;
 		super.loadResources();
-		res.mHeaderFont.prepareLetters("Next :1234567890.".toCharArray());
+		res.mFont.prepareLetters("Next :1234567890.".toCharArray());
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class ClassicGameScene extends GameScene {
 		Log.i("Game", "" + boundSpace + "," + res.mSquare.getWidth());
 		for (int i = 0; i < LIMIT_ROW; i++) {
 			for (int j = 0; j < LIMIT_COL; j++) {
-				Square s = new Square(0, 0, res.mSquare, vbom, res.mHeaderFont,
+				Square s = new Square(0, 0, res.mSquare, vbom, res.mWFont,
 						1.2f, "" + (C.CA[i * 5 + j].getValue())) {
 					@Override
 					public void onClick() {
@@ -121,8 +121,9 @@ public class ClassicGameScene extends GameScene {
 	}
 
 	protected void finish() {
-		// TODO Auto-generated method stub
-
+		for (int i = 0; i < table.getChildCount(); i++) {
+			this.unregisterTouchArea((Square) table.getChildByIndex(i));
+		}
 	}
 
 	protected static ClassicGameScene getIntance() {
@@ -133,7 +134,7 @@ public class ClassicGameScene extends GameScene {
 		Log.i("Game", "" + table.getChildCount());
 		for (int i = 0; i < table.getChildCount(); i++) {
 			this.registerTouchArea((Square) table.getChildByIndex(i));
-			((Square) table.getChildByIndex(i)).getText().setVisible(true);			
+			((Square) table.getChildByIndex(i)).getText().setVisible(true);
 		}
 		started = true;
 	}
@@ -141,13 +142,19 @@ public class ClassicGameScene extends GameScene {
 	@Override
 	public void addToHeadLayer() {
 		Entity time = new Entity(MainActivity.W / 2, 0);
-		timeText = new Text(0, 0, res.mHeaderFont, "0:00.00", vbom) {
-			long current = System.currentTimeMillis();
+		timeText = new Text(0, 0, res.mFont, "0:00.00", vbom) {
+			long current;
+			boolean first = true;
 			long t = 0; // time in miliseconds/10
 
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
 				if (started) {
+					if (first) {
+						Log.i("Game", "start clock");
+						current = System.currentTimeMillis();
+						first = false;
+					}
 					final long second = System.currentTimeMillis();
 					if (second - current > 10) {
 						long i = (second - current) % 10;
@@ -170,14 +177,14 @@ public class ClassicGameScene extends GameScene {
 		};
 		timeText.setPosition(time.getX() - timeText.getWidth() - 15,
 				time.getY() + 40);
-		time.attachChild(timeText);		
-		
-		next = new Text(0, 0, res.mHeaderFont, "Next:  0", vbom) {
+		time.attachChild(timeText);
+
+		next = new Text(0, 0, res.mFont, "Next:  0", vbom) {
 			protected int current = 0;
 
 			@Override
-			protected void onManagedUpdate(float pSecondsElapsed) {				
-				if (started) {					
+			protected void onManagedUpdate(float pSecondsElapsed) {
+				if (started) {
 					if (current != C.nextint) {
 						current = C.nextint;
 						this.setText(String.format("Next: %2d", current));
@@ -186,10 +193,10 @@ public class ClassicGameScene extends GameScene {
 				super.onManagedUpdate(pSecondsElapsed);
 			}
 		};
-		next.setPosition(this.headLayer.getX() + 15, this.headLayer.getY() + 40);		
+		next.setPosition(this.headLayer.getX() + 15, this.headLayer.getY() + 40);
 		this.headLayer.attachChild(time);
 		this.headLayer.attachChild(next);
-		Log.i("Game","Attach next");
+		Log.i("Game", "Attach next");
 
 	}
 }

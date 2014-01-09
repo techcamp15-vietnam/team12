@@ -62,7 +62,7 @@ public class ResourceManager {
 
 	public ITextureRegion mMenuBackground;
 
-	public Font mHeaderFont;
+	public Font mFont;
 
 	public ITextureRegion mClockRegion;
 
@@ -90,13 +90,15 @@ public class ResourceManager {
 
 	private BuildableBitmapTextureAtlas mMenuBitmapTextureAtlas;
 
-	private BuildableBitmapTextureAtlas mBackgroundBitmapTextureAtlas;
-
-	public Font mBigHeaderFont;
+	private BuildableBitmapTextureAtlas mBackgroundBitmapTextureAtlas;	
 
 	public ITextureRegion mStartRegion;
 
 	public ITextureRegion mCountDownRegion;
+
+	public Font mWFont;
+
+	public Font mHeaderFont;
 
 	public ResourceManager() {
 	}
@@ -282,18 +284,24 @@ public class ResourceManager {
 
 	public synchronized void loadFonts() {
 		FontFactory.setAssetBasePath("font/");
-		mHeaderFont = FontFactory
+		mFont = FontFactory
 				.createFromAsset(engine.getFontManager(),
 						engine.getTextureManager(), 400, 400,
 						activity.getAssets(), "Hand_Of_Sean_Demo.ttf", 60f,
-						true, Color.WHITE_ABGR_PACKED_INT);
-		mBigHeaderFont = FontFactory
+						true, Color.BLACK_ARGB_PACKED_INT);		
+		mWFont = FontFactory
+				.createFromAsset(engine.getFontManager(),
+						engine.getTextureManager(), 400, 400,
+						activity.getAssets(), "Hand_Of_Sean_Demo.ttf", 60f,
+						true, Color.WHITE_ARGB_PACKED_INT);		
+		mHeaderFont = FontFactory
 				.createFromAsset(engine.getFontManager(),
 						engine.getTextureManager(), 400, 400,
 						activity.getAssets(), "Hand_Of_Sean_Demo.ttf", 70f,
-						true, Color.WHITE_ABGR_PACKED_INT);
+						true, Color.BLACK_ARGB_PACKED_INT);		
+		mFont.load();
 		mHeaderFont.load();
-		mBigHeaderFont.load();
+		mWFont.load();
 	}
 
 	public synchronized void loadSounds() {
@@ -390,7 +398,9 @@ public class ResourceManager {
 	}
 
 	public synchronized void unloadFont() {
+		mFont.unload();
 		mHeaderFont.unload();
+		mWFont.unload();
 	}
 
 	// public void unloadSplashResources() {

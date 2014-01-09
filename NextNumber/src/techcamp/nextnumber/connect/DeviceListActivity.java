@@ -6,6 +6,8 @@ package techcamp.nextnumber.connect;
 
 import java.util.Set;
 
+import techcamp.nextnumber.R;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

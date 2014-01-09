@@ -18,6 +18,7 @@ import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtla
 import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.bitmap.BitmapTextureFormat;
 import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.util.color.Color;
 
 import techcamp.nextnumber.MainActivity;
 import techcamp.nextnumber.manager.SceneManager;
@@ -46,7 +47,7 @@ public class MenuScene extends AbstractScene {
 	@Override
 	public void loadResources() {
 //		 load Background
-		res.loadMenuBackground();
+		res.loadMenuBackground();		
 		res.loadFonts();
 		res.loadSounds();
 		res.loadMusic();
@@ -82,10 +83,10 @@ public class MenuScene extends AbstractScene {
 						"nothing.png");
 		Log.i("Menu", "OK! load game");
 
-		// Title
-		home_title = new Text(0, MainActivity.H * 0.1f, res.mBigHeaderFont,
+		// Title		
+		home_title = new Text(0, MainActivity.H * 0.1f, res.mHeaderFont,
 				"Next Number", vbom);
-		game_title = new Text(0, MainActivity.H * 0.1f, res.mBigHeaderFont,
+		game_title = new Text(0, MainActivity.H * 0.1f, res.mHeaderFont,
 				"Singleplayer", vbom) {
 			int currentMode = GameScene.SINGLE;
 			@Override
@@ -118,7 +119,7 @@ public class MenuScene extends AbstractScene {
 	@Override
 	public void create() {
 		Log.i("Menu", "create");
-//		ScaleButton.setSizeFollowText(true);
+		res.loadFonts();
 		res.resumeMusic();
 		// set Background
 		attachChild(new Sprite(0, 0, res.mMenuBackground, vbom));
@@ -148,7 +149,7 @@ public class MenuScene extends AbstractScene {
 		ScaleButton playSingleBtn = new ScaleButton(0.5f * MainActivity.W
 				- play_single_region.getWidth() / 2, 0.3f * MainActivity.H,
 				play_single_region, vbom, 1.2f, new Text(20, 0,
-						res.mHeaderFont, "Singleplayer", vbom)) {
+						res.mFont, "Singleplayer", vbom)) {
 			@Override
 			public void onClick() {
 				Log.i("Menu", "click single");
@@ -160,7 +161,7 @@ public class MenuScene extends AbstractScene {
 		attachChild(homeMenuChild);
 		ScaleButton playMultiBtn = new ScaleButton(playSingleBtn.getX(),
 				playSingleBtn.getY() + playSingleBtn.getHeight() + 45,
-				play_multi_region, vbom, 1.2f, new Text(20, 0, res.mHeaderFont,
+				play_multi_region, vbom, 1.2f, new Text(20, 0, res.mFont,
 						"Multiplayer", vbom)) {
 			@Override
 			public void onClick() {
@@ -173,7 +174,7 @@ public class MenuScene extends AbstractScene {
 		ScaleButton achievBtn = new ScaleButton(playSingleBtn.getX(),
 				playMultiBtn.getY() + playMultiBtn.getHeight() + 45,
 				achievement_region, vbom, 1.2f, new Text(20, 0,
-						res.mHeaderFont, "Achievemenet", vbom)) {
+						res.mFont, "Achievemenet", vbom)) {
 			@Override
 			public void onClick() {
 				// Achievement layer show
@@ -184,7 +185,7 @@ public class MenuScene extends AbstractScene {
 		this.registerTouchArea(achievBtn);
 		ScaleButton highBtn = new ScaleButton(playSingleBtn.getX(),
 				achievBtn.getY() + achievBtn.getHeight() + 45,
-				highscore_region, vbom, 1.2f, new Text(20, 0, res.mHeaderFont,
+				highscore_region, vbom, 1.2f, new Text(20, 0, res.mFont,
 						"Highscore", vbom)) {
 			@Override
 			public void onClick() {
@@ -200,12 +201,14 @@ public class MenuScene extends AbstractScene {
 		gameMenuChild.attachChild(game_title);
 		ScaleButton classicBtn = new ScaleButton(playSingleBtn.getX(),
 				0.4f * MainActivity.H, classic_region, vbom, 1.2f, new Text(20,
-						0, res.mHeaderFont, "Classic", vbom)) {
+						0, res.mFont, "Classic", vbom)) {
 			@Override
 			public void onClick() {
 				// Game play show: classic mode
 				if (modePlayer == GameScene.SINGLE) {
-					SceneManager.getInstance().showGameMode(GameScene.CLASSIC, GameScene.SINGLE);
+					GameScene.modeGameplay = GameScene.CLASSIC;
+					GameScene.modePlayer = GameScene.SINGLE;
+					SceneManager.getInstance().showGameMode();
 				} else {
 					SceneManager.getInstance().showMultiMenu(GameScene.CLASSIC);
 				}
@@ -215,13 +218,15 @@ public class MenuScene extends AbstractScene {
 		this.registerTouchArea(classicBtn);
 		ScaleButton challengeBtn = new ScaleButton(classicBtn.getX(),
 				classicBtn.getY() + classicBtn.getHeight() + 55,
-				challenge_region, vbom, 1.2f, new Text(20, 0, res.mHeaderFont,
+				challenge_region, vbom, 1.2f, new Text(20, 0, res.mFont,
 						"Challenge", vbom)) {
 			@Override
 			public void onClick() {
 				// Game play show: challenge mode
 				if (modePlayer == GameScene.SINGLE) {
-					SceneManager.getInstance().showGameMode(GameScene.CHALLENGE, GameScene.SINGLE);
+					GameScene.modeGameplay = GameScene.CHALLENGE;
+					GameScene.modePlayer = GameScene.SINGLE;
+					SceneManager.getInstance().showGameMode();
 				} else {
 					SceneManager.getInstance().showMultiMenu(GameScene.CHALLENGE);
 				}

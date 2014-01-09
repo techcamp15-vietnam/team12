@@ -8,6 +8,7 @@ package techcamp.nextnumber.scenes;
 import org.andengine.entity.Entity;
 import org.andengine.entity.modifier.MoveModifier;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.util.color.Color;
 
 import techcamp.nextnumber.MainActivity;
 

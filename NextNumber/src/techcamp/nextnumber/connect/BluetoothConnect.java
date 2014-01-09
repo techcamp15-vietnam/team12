@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 
+import techcamp.nextnumber.R;
+
 /**
  * This is the main activity to show data transfer via  bluetooth
  * Main activity shows common data will be used to syn data between two devices
@@ -81,7 +83,7 @@ public class BluetoothConnect extends Activity {
         super.onCreate(savedInstanceState);
 
         // Set up the window layout
-        setContentView(R.layout.main);
+        setContentView(R.layout.connect_main);
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // If the adapter is null, then Bluetooth is not supported

@@ -101,7 +101,7 @@ public class MultiGameMenu extends AbstractScene {
 		Entity waitSub = new Entity(MainActivity.W, 0);
 		waitLayer.attachChild(waitSub);
 		ScaleButton startBtn = new ScaleButton(0f, 0f, mStartRegion, vbom,
-				1.2f, new Text(0f, 0f, res.mHeaderFont, "Connect", vbom) {
+				1.2f, new Text(0f, 0f, res.mFont, "Connect", vbom) {
 					protected int current = CREATE;
 
 					@Override

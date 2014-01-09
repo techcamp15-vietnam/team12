@@ -8,11 +8,14 @@ package techcamp.nextnumber.scenes;
 import org.andengine.entity.Entity;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.modifier.MoveModifier;
+import org.andengine.entity.modifier.ScaleModifier;
 import org.andengine.entity.text.Text;
+import org.andengine.opengl.texture.region.ITextureRegion;
 
 import android.util.Log;
 
 import techcamp.nextnumber.MainActivity;
+import techcamp.nextnumber.utils.Cell;
 import techcamp.nextnumber.utils.CellArray;
 import techcamp.nextnumber.utils.ScaleButton;
 import techcamp.nextnumber.utils.Square;
@@ -27,12 +30,16 @@ public class ChallengeGameScene extends GameScene {
 	private Text next;
 	private Entity table;
 	private CellArray C;
+	private int count_bonus;
+	private int count_double;
+	private int count_triple;
+	private int count_blink;
 
 	@Override
 	public void loadResources() {
 		GameScene.modeGameplay = GameScene.CHALLENGE;
 		super.loadResources();
-		res.mHeaderFont.prepareLetters("Next :1234567890.".toCharArray());
+		res.mFont.prepareLetters("Next :1234567890.".toCharArray());
 		Log.i("Game", "end load");
 	}
 
@@ -66,25 +73,50 @@ public class ChallengeGameScene extends GameScene {
 	public void addToMainLayer() {
 		table = new Entity(0, 0);
 		C = new CellArray();
-		C.CreateData(1);
+		C.CreateData(2); // random for challenge
 		float boundSpace = (MainActivity.W - LIMIT_COL * res.mSquare.getWidth())
 				/ LIMIT_COL; // calculate suitable space between squares
-		Log.i("Game", "" + boundSpace + "," + res.mSquare.getWidth());		
+		Log.i("Game", "" + boundSpace + "," + res.mSquare.getWidth());
 		for (int i = 0; i < LIMIT_ROW; i++) {
 			for (int j = 0; j < LIMIT_COL; j++) {
-				Square s = new Square(0, 0, res.mSquareDoubleRegion, vbom, res.mHeaderFont,
-						1.2f, "" + (C.CA[i * 5 + j].getValue()),Square.DOUBLE) {
+				ITextureRegion it = null;
+				switch (C.CA[5 * i + j].geteffect()) {
+				case Cell.BLINK:
+					it = res.mSquareBlinkRegion;
+					break;
+				case Cell.BONUS:
+					it = res.mSquareBonusRegion;
+					break;
+				case Cell.DOUBLE:
+					it = res.mSquareDoubleRegion;
+					break;
+				case Cell.TRIPLE:
+					it = res.mSquareTripleRegion;
+					break;
+				default:
+					it = res.mSquare;
+					break;
+				}
+				Square s = new Square(0, 0, it, vbom, res.mFont, 1.2f, ""
+						+ (C.CA[i * 5 + j].getValue()),
+						C.CA[i * 5 + j].geteffect()) {
 					@Override
 					public void onClick() {
-						if (GameScene.modePlayer == GameScene.SINGLE) {							
+						if (GameScene.modePlayer == GameScene.SINGLE) {
 							if (this.value == C.nextint) {
-								if (C.nextint == LIMIT_SIZE) {
-									started = false;
-									this.setAlpha(.5f);
-									this.setEnable(false);
-									finish();
+								if (C.nextint >= LIMIT_SIZE) {
+									if (this.getType() == Cell.NONE
+											|| this.getType() == Cell.BONUS
+											|| this.getType() == Cell.BLINK) {
+										started = false;
+										this.setAlpha(.5f);
+										this.setEnable(false);
+										finish();
+									} else {
+										handlerSquare(this);
+									}
 								} else {
-									handlerSquare(this);			
+									handlerSquare(this);
 								}
 							}
 						}
@@ -123,18 +155,21 @@ public class ChallengeGameScene extends GameScene {
 	}
 
 	protected void handlerSquare(Square square) {
-		switch (square.getType()){
-		case Square.NONE:
+		switch (square.getType()) {
+		case Cell.NONE:
 			C.nextint++;
 			square.setAlpha(.5f);
 			square.setEnable(false);
 			break;
-		case Square.DOUBLE:			
-			table.detachChild(square);			
-			square = new Square(square.getX(), square.getY(), res.mSquare, vbom,res.mHeaderFont,1.2f,""+square.getValue(),Square.NONE) {				
+		case Cell.DOUBLE:
+			table.detachChild(square);
+			this.unregisterTouchArea(square);
+			square = new Square(square.getX(), square.getY(), res.mSquare,
+					vbom, res.mFont, 1.2f, "" + square.getValue(),
+					Cell.NONE) {
 				@Override
 				public void onClick() {
-					if (GameScene.modePlayer == GameScene.SINGLE) {							
+					if (GameScene.modePlayer == GameScene.SINGLE) {
 						if (this.value == C.nextint) {
 							if (C.nextint == LIMIT_SIZE) {
 								started = false;
@@ -142,25 +177,81 @@ public class ChallengeGameScene extends GameScene {
 								this.setEnable(false);
 								finish();
 							} else {
-								handlerSquare(this);			
+								handlerSquare(this);
 							}
 						}
 					}
 				}
 			};
+			square.getText().setVisible(true);
 			table.attachChild(square);
 			this.registerTouchArea(square);
 			break;
-		case Square.TRIPLE:
-			square.setDoubleType();
+		case Cell.TRIPLE:
+			table.detachChild(square);
+			this.unregisterTouchArea(square);
+			square = new Square(square.getX(), square.getY(),
+					res.mSquareDoubleRegion, vbom, res.mFont, 1.2f, ""
+							+ square.getValue(), Cell.DOUBLE) {
+				@Override
+				public void onClick() {
+					if (GameScene.modePlayer == GameScene.SINGLE) {
+						if (this.value == C.nextint) {
+							if (C.nextint == LIMIT_SIZE) {
+								started = false;
+								this.setAlpha(.5f);
+								this.setEnable(false);
+								finish();
+							} else {
+								handlerSquare(this);
+							}
+						}
+					}
+				}
+			};
+			square.getText().setVisible(true);
+			table.attachChild(square);
+			this.registerTouchArea(square);
 			break;
-		case Square.BONUS:
+		case Cell.BONUS:
+			C.nextint++;
+			square.setEnable(false);
+			for (int i = 0; i < LIMIT_SIZE; i++) {
+				final Square s = (Square) table.getChildByIndex(i);
+				if (s.getValue() == C.nextint) {
+					s.registerEntityModifier(new ScaleModifier(0.05f, 1, 1.2f) {
+						@Override
+						protected void onModifierFinished(final IEntity pItem) {
+							super.onModifierFinished(pItem);
+							s.registerEntityModifier(new ScaleModifier(0.05f,
+									1.2f, 1f) {
+								@Override
+								protected void onModifierFinished(
+										final IEntity pItem) {
+									super.onModifierFinished(pItem);
+									s.setAlpha(.5f);
+								}
+							});
+						}
+					});
+					square.setAlpha(.5f);
+					handlerSquare(s);
+					break;
+				}
+			}
+			break;
+		case Cell.BLINK:
+			C.nextint++;
+			square.setAlpha(.5f);
+			square.setEnable(false);
+			break;
 		}
 	}
 
 	protected void finish() {
-		// TODO Auto-generated method stub
-
+		for (int i = 0; i < table.getChildCount(); i++){
+			this.unregisterTouchArea((Square)table.getChildByIndex(i));
+		}
 	}
 
 	protected static ChallengeGameScene getIntance() {
@@ -179,21 +270,29 @@ public class ChallengeGameScene extends GameScene {
 	@Override
 	public void addToHeadLayer() {
 		Entity time = new Entity(MainActivity.W / 2, 0);
-		timeText = new Text(0, 0, res.mHeaderFont, "00.00", vbom) {
-			long current = System.currentTimeMillis();
+		timeText = new Text(0, 0, res.mFont, "00.00", vbom) {
+			long current;
+			boolean first = true;
 			long t = LIMIT_TIME;
 
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
 				if (started) {
+					if (first) {
+						first = false;
+						current = System.currentTimeMillis();
+					}
 					if (t <= 0) {
 						started = false;
+						finish();
 					} else {
 						final long second = System.currentTimeMillis();
 						if (second - current > 10) {
 							long i = (second - current) % 10;
 							current += 10 * i;
 							t -= i;
+							if (t < 0)
+								t = 0;
 							this.setText(String.format("%02d.%02d", (t / 100),
 									t % 100));
 						}
@@ -201,9 +300,8 @@ public class ChallengeGameScene extends GameScene {
 				}
 				super.onManagedUpdate(pSecondsElapsed);
 			}
-
 			public long getRestTime() {
-				return (0 > t) ? 0 : t;
+				return t;
 			}
 		};
 		timeText.setPosition(time.getX() - timeText.getWidth() - 15,
@@ -211,7 +309,7 @@ public class ChallengeGameScene extends GameScene {
 		time.attachChild(timeText);
 		this.headLayer.attachChild(time);
 
-		next = new Text(0, 0, res.mHeaderFont, "Next:  0", vbom) {
+		next = new Text(0, 0, res.mFont, "Next:  0", vbom) {
 			protected int current = 0;
 
 			@Override

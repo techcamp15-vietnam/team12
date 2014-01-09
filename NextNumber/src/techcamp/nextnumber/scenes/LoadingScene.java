@@ -9,6 +9,7 @@ import org.andengine.entity.scene.background.ParallaxBackground;
 import org.andengine.entity.scene.background.ParallaxBackground.ParallaxEntity;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
+import org.andengine.util.color.Color;
 
 import techcamp.nextnumber.MainActivity;
 import techcamp.nextnumber.manager.ResourceManager;
@@ -23,7 +24,7 @@ public class LoadingScene extends AbstractScene {
 		ResourceManager.getInstance().loadLoadingBackground();
 		ResourceManager.getInstance().loadFonts();
 		loadText = new Text(MainActivity.W * 0.3f, MainActivity.H * 0.5f,
-				ResourceManager.getInstance().mHeaderFont, "Loading...", vbom);
+				ResourceManager.getInstance().mFont, "Loading...", vbom);
 	}
 
 	@Override
