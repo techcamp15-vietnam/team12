@@ -1,8 +1,8 @@
 /**
- * @author Nguyen Phi Hiep
+ * @author -  12C - Nguyen Phi Hiep
  *
  * */
-package com.example.android.BluetoothChat;
+package techcamp.nextnumber.connect;
 
 import android.app.ActionBar;
 import android.app.Activity;
