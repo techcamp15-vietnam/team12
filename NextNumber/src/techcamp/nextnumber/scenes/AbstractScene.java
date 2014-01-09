@@ -8,9 +8,9 @@ package techcamp.nextnumber.scenes;
 
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
+import org.andengine.entity.Entity;
 import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
-import org.andengine.util.debug.Debug;
 
 import techcamp.nextnumber.MainActivity;
 import techcamp.nextnumber.manager.ResourceManager;
@@ -23,6 +23,8 @@ public abstract class AbstractScene extends Scene {
 	protected MainActivity activity;
 	protected VertexBufferObjectManager vbom;
 	protected Camera camera;
+	protected boolean layerView;
+	protected Entity currentLayer;
 
 	public AbstractScene() {
 		if (ResourceManager.getInstance() != null)
@@ -35,7 +37,13 @@ public abstract class AbstractScene extends Scene {
 		this.activity = activity;
 		this.vbom = activity.getVertexBufferObjectManager();
 		this.engine = activity.getEngine();
-		this.camera = engine.getCamera();
+		this.camera = engine.getCamera();	
+		this.layerView = false;
+		this.currentLayer = null;
+	}
+	
+	public boolean isLayerShown(){
+		return layerView;
 	}
 
 	public abstract void loadResources();
@@ -44,13 +52,11 @@ public abstract class AbstractScene extends Scene {
 
 	public abstract void unloadResources();
 
-	public abstract void destroy();
-
-	public void onBackKeyPressed() {
-		Debug.d("Back key pressed");
-	}
+	public abstract void destroy();	
 
 	public abstract void onPause();
 
 	public abstract void onResume();
+	
+	public abstract void onHiddenLayer();
 }

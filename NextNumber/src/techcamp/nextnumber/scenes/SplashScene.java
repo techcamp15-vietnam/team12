@@ -53,4 +53,8 @@ public class SplashScene extends AbstractScene {
 	public void onResume() {
 	}
 
+	@Override
+	public void onHiddenLayer() {		
+	}
+
 }

@@ -48,5 +48,11 @@ public class MultiGameMenu extends AbstractScene{
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void onHiddenLayer() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

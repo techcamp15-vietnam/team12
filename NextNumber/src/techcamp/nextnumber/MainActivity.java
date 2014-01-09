@@ -21,6 +21,11 @@ import org.andengine.ui.activity.BaseGameActivity;
 
 import techcamp.nextnumber.manager.ResourceManager;
 import techcamp.nextnumber.manager.SceneManager;
+import techcamp.nextnumber.scenes.AbstractScene;
+import techcamp.nextnumber.scenes.LoadingScene;
+import techcamp.nextnumber.scenes.MenuScene;
+import techcamp.nextnumber.scenes.SplashScene;
+import android.view.KeyEvent;
 
 public class MainActivity extends BaseGameActivity {
 	/** Screen width, standard 720p */
@@ -76,8 +81,8 @@ public class MainActivity extends BaseGameActivity {
 			OnCreateResourcesCallback pOnCreateResourcesCallback)
 			throws IOException {
 		ResourceManager.getInstance().init(this);
-		ResourceManager.getInstance().loadMusic();		
-		pOnCreateResourcesCallback.onCreateResourcesFinished();		
+		ResourceManager.getInstance().loadMusic();
+		pOnCreateResourcesCallback.onCreateResourcesFinished();
 	}
 
 	@Override
@@ -97,5 +102,26 @@ public class MainActivity extends BaseGameActivity {
 		SceneManager.getInstance().showSplash();
 		ResourceManager.getInstance().resumeMusic();
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK
+				&& event.getAction() == KeyEvent.ACTION_DOWN) {
+			if (ResourceManager.getInstance().engine != null){
+				AbstractScene cur = SceneManager.getInstance().getCurrentScene();
+				if (cur.isLayerShown()){
+					cur.onHiddenLayer();
+				} else {
+					Class<? extends AbstractScene> instance = cur.getClass();
+					if (instance.equals(SplashScene.class)|| instance.equals(LoadingScene.class)|| instance.equals(MenuScene.class)){
+						System.exit(0);
+					} else {
+						SceneManager.getInstance().showScene(MenuScene.class);
+					}
+				}
+			}
+		}
+		return true;
 	}
 }

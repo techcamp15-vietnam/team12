@@ -34,15 +34,13 @@ public class MenuScene extends AbstractScene {
 	private ITextureRegion challenge_region;
 	private Entity homeMenuChild;
 	private Entity gameMenuChild;
-	private Text home_title;	
+	private Entity achievLayer;
+	private Entity highscoreLayer;
+	private Text home_title;
 	private Text game_title;
 	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
 	private BuildableBitmapTextureAtlas mGameBitmapTextureAtlas;
-	public static final int SINGLE = 0;
-	public static final int MULTI = 1;
-	public static final int CLASSIC = 2;
-	public static final int CHALLENGE = 3;
-	private static int modePlayer = SINGLE;
+	private static int modePlayer = GameScene.SINGLE;
 
 	// Load resources
 	@Override
@@ -60,16 +58,16 @@ public class MenuScene extends AbstractScene {
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
 		play_single_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
-						"play_single.png");
+						"nothing.png");
 		play_multi_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
-						"play_multi.png");
+						"nothing.png");
 		achievement_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
-						"achievement.png");
+						"nothing.png");
 		highscore_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mBitmapTextureAtlas, activity.getAssets(),
-						"highscore.png");
+						"nothing.png");
 		Log.i("Menu", "OK! load home");
 
 		// load player menu
@@ -78,25 +76,24 @@ public class MenuScene extends AbstractScene {
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
 		classic_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mGameBitmapTextureAtlas, activity.getAssets(),
-						"classic.png");
+						"nothing.png");
 		challenge_region = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mGameBitmapTextureAtlas, activity.getAssets(),
-						"challenge.png");
+						"nothing.png");
 		Log.i("Menu", "OK! load game");
 
 		// Title
 		home_title = new Text(0, MainActivity.H * 0.1f, res.mBigHeaderFont,
-				"NextNumber", vbom);
+				"Next Number", vbom);
 		game_title = new Text(0, MainActivity.H * 0.1f, res.mBigHeaderFont,
 				"Singleplayer", vbom) {
-			int currentMode = SINGLE;
+			int currentMode = GameScene.SINGLE;
 
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
 				if (modePlayer != currentMode) {
-					Log.i("Update", "" + modePlayer + "," + currentMode);
 					currentMode = modePlayer;
-					if (modePlayer == SINGLE) {
+					if (modePlayer == GameScene.SINGLE) {
 						this.setText("Singleplayer");
 					} else {
 						this.setText("Multiplayer");
@@ -122,6 +119,7 @@ public class MenuScene extends AbstractScene {
 	@Override
 	public void create() {
 		Log.i("Menu", "create");
+		ScaleButton.setSizeFollowText(true);
 		res.resumeMusic();
 		// set Background
 		attachChild(new Sprite(0, 0, res.mMenuBackground, vbom));
@@ -132,14 +130,13 @@ public class MenuScene extends AbstractScene {
 		game_title.setPosition(MainActivity.W / 2 - game_title.getWidth() / 2,
 				game_title.getY());
 
-		homeMenuChild = new Entity() {
+		homeMenuChild = new Entity(0, MainActivity.H) {
 			public boolean first = false;
 
 			@Override
 			protected void onManagedUpdate(final float pSecondsElapsed) {
 				super.onManagedUpdate(pSecondsElapsed);
 				if (!this.first) {
-					Log.i("Menu", "onManageUpdate");
 					this.first = true;
 					this.registerEntityModifier(new MoveModifier(0.5f, 0f, 0f,
 							MainActivity.H, 0f));
@@ -147,45 +144,49 @@ public class MenuScene extends AbstractScene {
 			}
 		};
 		gameMenuChild = new Entity(MainActivity.W, 0);
-		Log.i("Menu", "load entity");
 
 		homeMenuChild.attachChild(home_title);
 		ScaleButton playSingleBtn = new ScaleButton(0.5f * MainActivity.W
 				- play_single_region.getWidth() / 2, 0.3f * MainActivity.H,
-				play_single_region, vbom, 1.2f) {
+				play_single_region, vbom, 1.2f, new Text(20, 0,
+						res.mHeaderFont, "Singleplayer", vbom)) {
 			@Override
 			public void onClick() {
 				Log.i("Menu", "click single");
-				goToGameScreen(SINGLE);
+				goToGameScreen(GameScene.SINGLE);
 			}
 		};
 		homeMenuChild.attachChild(playSingleBtn);
 		this.registerTouchArea(playSingleBtn);
 		attachChild(homeMenuChild);
 		ScaleButton playMultiBtn = new ScaleButton(playSingleBtn.getX(),
-				playSingleBtn.getY() + playSingleBtn.getHeight() + 25,
-				play_multi_region, vbom, 1.2f) {
+				playSingleBtn.getY() + playSingleBtn.getHeight() + 45,
+				play_multi_region, vbom, 1.2f, new Text(20, 0, res.mHeaderFont,
+						"Multiplayer", vbom)) {
 			@Override
 			public void onClick() {
 				Log.i("Menu", "click multi");
-				goToGameScreen(MULTI);
+				goToGameScreen(GameScene.MULTI);
 			}
 		};
 		homeMenuChild.attachChild(playMultiBtn);
 		this.registerTouchArea(playMultiBtn);
 		ScaleButton achievBtn = new ScaleButton(playSingleBtn.getX(),
-				playMultiBtn.getY() + playMultiBtn.getHeight() + 25,
-				achievement_region, vbom, 1.2f) {
+				playMultiBtn.getY() + playMultiBtn.getHeight() + 45,
+				achievement_region, vbom, 1.2f, new Text(20, 0,
+						res.mHeaderFont, "Achievemenet", vbom)) {
 			@Override
 			public void onClick() {
-				// Achievement scene show
+				// Achievement layer show
+				
 			}
 		};
 		homeMenuChild.attachChild(achievBtn);
 		this.registerTouchArea(achievBtn);
 		ScaleButton highBtn = new ScaleButton(playSingleBtn.getX(),
-				achievBtn.getY() + achievBtn.getHeight() + 25,
-				highscore_region, vbom, 1.2f) {
+				achievBtn.getY() + achievBtn.getHeight() + 45,
+				highscore_region, vbom, 1.2f, new Text(20, 0, res.mHeaderFont,
+						"Highscore", vbom)) {
 			@Override
 			public void onClick() {
 				// Achievement scene show
@@ -197,29 +198,31 @@ public class MenuScene extends AbstractScene {
 		/* Setting for gameMenuChild */
 		gameMenuChild.attachChild(game_title);
 		ScaleButton classicBtn = new ScaleButton(playSingleBtn.getX(),
-				0.4f * MainActivity.H, classic_region, vbom, 1.2f) {
+				0.4f * MainActivity.H, classic_region, vbom, 1.2f, new Text(20,
+						0, res.mHeaderFont, "Classic", vbom)) {
 			@Override
 			public void onClick() {
 				// Game play show: classic mode
-				if (modePlayer == SINGLE) {
-					SceneManager.getInstance().showGameMode(CLASSIC, SINGLE);
+				if (modePlayer == GameScene.SINGLE) {
+					SceneManager.getInstance().showGameMode(GameScene.CLASSIC, GameScene.SINGLE);
 				} else {
-					SceneManager.getInstance().showMultiMenu(CLASSIC);
+					SceneManager.getInstance().showMultiMenu(GameScene.CLASSIC);
 				}
 			}
 		};
 		gameMenuChild.attachChild(classicBtn);
 		this.registerTouchArea(classicBtn);
 		ScaleButton challengeBtn = new ScaleButton(classicBtn.getX(),
-				classicBtn.getY() + classicBtn.getHeight() + 25,
-				challenge_region, vbom, 1.2f) {
+				classicBtn.getY() + classicBtn.getHeight() + 55,
+				challenge_region, vbom, 1.2f, new Text(20, 0, res.mHeaderFont,
+						"Challenge", vbom)) {
 			@Override
 			public void onClick() {
 				// Game play show: challenge mode
-				if (modePlayer == SINGLE) {
-					SceneManager.getInstance().showGameMode(CHALLENGE, SINGLE);
+				if (modePlayer == GameScene.SINGLE) {
+					SceneManager.getInstance().showGameMode(GameScene.CHALLENGE, GameScene.SINGLE);
 				} else {
-					SceneManager.getInstance().showMultiMenu(CHALLENGE);
+					SceneManager.getInstance().showMultiMenu(GameScene.CHALLENGE);
 				}
 			}
 		};
@@ -227,25 +230,31 @@ public class MenuScene extends AbstractScene {
 		this.registerTouchArea(challengeBtn);
 
 		attachChild(gameMenuChild);
-		Log.i("Menu", "" + homeMenuChild.getX() + "," + homeMenuChild.getY());
+		ScaleButton.setSizeFollowText(false);
+		this.layerView = false;
+		this.currentLayer = homeMenuChild;
+
 	}
 
 	protected void goToHomeScreen() {
 		Log.i("Menu", "Go to Home");
-		homeMenuChild.registerEntityModifier(new MoveModifier(0.25f,
-				homeMenuChild.getX(), homeMenuChild.getY(), 0f, 0f));
+		this.layerView = false;
+		this.currentLayer = homeMenuChild;
 		gameMenuChild
-				.registerEntityModifier(new MoveModifier(0.25f, gameMenuChild
-						.getX(), gameMenuChild.getY(), MainActivity.W, 0f));
+		.registerEntityModifier(new MoveModifier(0.5f, gameMenuChild
+				.getX(), MainActivity.W, gameMenuChild.getY(), 0f));
+		homeMenuChild.registerEntityModifier(new MoveModifier(0.5f,
+				homeMenuChild.getX(), 0f, homeMenuChild.getY(), 0f));		
 	}
 
 	protected void goToGameScreen(int mode) {
 		modePlayer = mode;
-		Log.i("Update", "mode - " + mode);
+		this.layerView = true;
+		this.currentLayer = gameMenuChild;
 		homeMenuChild
-				.registerEntityModifier(new MoveModifier(0.25f, homeMenuChild
+				.registerEntityModifier(new MoveModifier(0.5f, homeMenuChild
 						.getX(), -MainActivity.W, homeMenuChild.getY(), 0f));
-		gameMenuChild.registerEntityModifier(new MoveModifier(0.25f,
+		gameMenuChild.registerEntityModifier(new MoveModifier(0.5f,
 				gameMenuChild.getX(), 0f, gameMenuChild.getY(), 0f));
 	}
 
@@ -268,4 +277,12 @@ public class MenuScene extends AbstractScene {
 	@Override
 	public void onResume() {
 	}
+
+	@Override
+	public void onHiddenLayer() {
+		if (currentLayer != homeMenuChild) {
+			goToHomeScreen();
+		}
+	}
+
 }

@@ -21,7 +21,6 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
-import org.andengine.opengl.texture.atlas.buildable.BuildableTextureAtlas;
 import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
 import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.bitmap.BitmapTextureFormat;
@@ -31,8 +30,6 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
 import techcamp.nextnumber.MainActivity;
-import techcamp.nextnumber.scenes.GameScene;
-import android.graphics.Typeface;
 import android.util.Log;
 
 public class ResourceManager {
@@ -65,7 +62,7 @@ public class ResourceManager {
 
 	public ITextureRegion mMenuBackground;
 
-	public Font mFont;
+	public Font mHeaderFont;
 
 	public ITextureRegion mGameRegion;
 
@@ -98,6 +95,8 @@ public class ResourceManager {
 	private BuildableBitmapTextureAtlas mMenuBitmapTextureAtlas;
 
 	private BuildableBitmapTextureAtlas mBackgroundBitmapTextureAtlas;
+
+	public Font mBigHeaderFont;
 
 	public ResourceManager() {
 	}
@@ -216,7 +215,7 @@ public class ResourceManager {
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
 		mMenuBackground = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mMenuBitmapTextureAtlas, activity,
-						"highscore.png");
+						"menu_background.png");
 
 		try {
 			mMenuBitmapTextureAtlas
@@ -284,11 +283,19 @@ public class ResourceManager {
 	}
 
 	public synchronized void loadFonts() {
-		mFont = FontFactory.create(engine.getFontManager(),
-				engine.getTextureManager(), 256, 256,
-				Typeface.create(Typeface.DEFAULT, Typeface.NORMAL), 32f, true,
-				Color.WHITE_ABGR_PACKED_INT);
-		mFont.load();
+		FontFactory.setAssetBasePath("font/");
+		mHeaderFont = FontFactory
+				.createFromAsset(engine.getFontManager(),
+						engine.getTextureManager(), 256, 256,
+						activity.getAssets(), "Hand_Of_Sean_Demo.ttf", 60f,
+						true, Color.BLACK_ABGR_PACKED_INT);
+		mBigHeaderFont = FontFactory
+				.createFromAsset(engine.getFontManager(),
+						engine.getTextureManager(), 256, 256,
+						activity.getAssets(), "Hand_Of_Sean_Demo.ttf", 70f,
+						true, Color.BLACK_ABGR_PACKED_INT);
+		mHeaderFont.load();
+		mBigHeaderFont.load();
 	}
 
 	public synchronized void loadSounds() {
@@ -303,9 +310,14 @@ public class ResourceManager {
 		}
 	}
 
-	public synchronized void playSound() {
+	public synchronized void playSound(int type) {
 		if (mSound != null) {
-			mSound.play();
+			switch (type) {
+			case 0: break;
+			case 1:
+				mSound.play();
+				break;
+			}
 		}
 	}
 
@@ -379,7 +391,7 @@ public class ResourceManager {
 	}
 
 	public synchronized void unloadFont() {
-		mFont.unload();
+		mHeaderFont.unload();
 	}
 
 	// public void unloadSplashResources() {

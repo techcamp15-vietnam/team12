@@ -34,4 +34,16 @@ public class ChallengeGameScene extends GameScene {
 	public void onResume() {
 	}
 
+	@Override
+	public void addToMainLayer() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addToHeadLayer() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
