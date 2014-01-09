@@ -49,9 +49,9 @@ public abstract class ScaleButton extends Sprite {
 		this(pX, pY, pTextureRegion, vbom, scale);
 		Text text = new Text(0, 0, f, s, vbom);
 		this.text = text;
-		text.setPosition(this.getWidth() / 2 - text.getWidth() / 2,
-				this.getHeight() / 2 - text.getHeight() / 2);
-		this.attachChild(text);
+		text.setPosition(super.getWidth() / 2 - text.getWidth() / 2,
+				super.getHeight() / 2 - text.getHeight() / 2);
+		this.attachChild(text);	
 	}
 
 	public Text getText() {
@@ -83,12 +83,13 @@ public abstract class ScaleButton extends Sprite {
 	 */
 	@Override
 	public float getWidth() {
+		float f = super.getWidth();
 		if (!sizeFollowText)
-			return super.getWidth();
+			return f;
 		if (text != null)
 			return text.getWidth();
 		else
-			return super.getWidth();
+			return f;
 	}
 
 	/**
@@ -96,12 +97,13 @@ public abstract class ScaleButton extends Sprite {
 	 */
 	@Override
 	public float getHeight() {
+		float f = super.getHeight();
 		if (!sizeFollowText)
-			return super.getHeight();
+			return f;
 		if (text != null)
 			return text.getHeight();
 		else
-			return super.getHeight();
+			return f;
 	}
 
 	@Override
@@ -114,9 +116,6 @@ public abstract class ScaleButton extends Sprite {
 					protected void onModifierFinished(final IEntity pItem) {
 						super.onModifierFinished(pItem);
 						SCALED = true;
-						if (!TOUCHED) {
-
-						}
 					}
 				});
 			} else if (SCALED && !TOUCHED) {
@@ -127,7 +126,7 @@ public abstract class ScaleButton extends Sprite {
 						SCALED = false;
 						if (CLICKED) {
 							CLICKED = false;
-							onClick();
+							onClick();	
 						}
 					}
 				});
@@ -142,8 +141,8 @@ public abstract class ScaleButton extends Sprite {
 		if (TOUCH_ENABLE) {
 			if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_DOWN) {
 //				Log.i("Touch", "Down");
-				if (pTouchAreaLocalX > this.getWidth() || pTouchAreaLocalX < 0f
-						|| pTouchAreaLocalY > this.getHeight()
+				if (pTouchAreaLocalX >= this.getWidth() || pTouchAreaLocalX < 0f
+						|| pTouchAreaLocalY >= this.getHeight()
 						|| pTouchAreaLocalY < 0f) {
 					TOUCH_STARTED = false;
 				} else {
@@ -162,14 +161,12 @@ public abstract class ScaleButton extends Sprite {
 					if (TOUCH_STARTED && !TOUCHED)
 						TOUCHED = true;
 				}
-			} else if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP) {
+			} else if (pSceneTouchEvent.getAction() == TouchEvent.ACTION_UP && TOUCH_STARTED && TOUCHED) {
 //					Log.i("Touch","Up"+SCALED+","+TOUCHED);
 					TOUCHED = false;
 					CLICKED = true;
 					TOUCH_STARTED = false;
 					ResourceManager.getInstance().playSound(soundType);				
-			} else {
-//				Log.i("Another",""+pSceneTouchEvent.getAction());
 			}
 		}
 		return true;

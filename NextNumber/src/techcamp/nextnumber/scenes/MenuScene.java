@@ -45,7 +45,7 @@ public class MenuScene extends AbstractScene {
 	// Load resources
 	@Override
 	public void loadResources() {
-		// load Background
+//		 load Background
 		res.loadMenuBackground();
 		res.loadFonts();
 		res.loadSounds();
@@ -88,7 +88,6 @@ public class MenuScene extends AbstractScene {
 		game_title = new Text(0, MainActivity.H * 0.1f, res.mBigHeaderFont,
 				"Singleplayer", vbom) {
 			int currentMode = GameScene.SINGLE;
-
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
 				if (modePlayer != currentMode) {
@@ -119,7 +118,7 @@ public class MenuScene extends AbstractScene {
 	@Override
 	public void create() {
 		Log.i("Menu", "create");
-		ScaleButton.setSizeFollowText(true);
+//		ScaleButton.setSizeFollowText(true);
 		res.resumeMusic();
 		// set Background
 		attachChild(new Sprite(0, 0, res.mMenuBackground, vbom));
@@ -178,7 +177,7 @@ public class MenuScene extends AbstractScene {
 			@Override
 			public void onClick() {
 				// Achievement layer show
-				
+				achievLayer = new Entity();
 			}
 		};
 		homeMenuChild.attachChild(achievBtn);
@@ -189,9 +188,11 @@ public class MenuScene extends AbstractScene {
 						"Highscore", vbom)) {
 			@Override
 			public void onClick() {
-				// Achievement scene show
+				// Highscore layer show
+				highscoreLayer = new Entity();
 			}
 		};
+		Log.i("Menu","W: "+achievBtn.getWidth());
 		homeMenuChild.attachChild(highBtn);
 		this.registerTouchArea(highBtn);
 
@@ -229,8 +230,7 @@ public class MenuScene extends AbstractScene {
 		gameMenuChild.attachChild(challengeBtn);
 		this.registerTouchArea(challengeBtn);
 
-		attachChild(gameMenuChild);
-		ScaleButton.setSizeFollowText(false);
+		attachChild(gameMenuChild);		
 		this.layerView = false;
 		this.currentLayer = homeMenuChild;
 

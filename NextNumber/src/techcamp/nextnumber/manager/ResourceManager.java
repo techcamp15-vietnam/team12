@@ -42,7 +42,7 @@ public class ResourceManager {
 	public VertexBufferObjectManager vbom;
 
 	// splash
-	public ITextureRegion splashRegion;
+	public ITextureRegion mSplashRegion;
 
 	public ITextureRegion mClassicBackgroundRegion;
 
@@ -63,8 +63,6 @@ public class ResourceManager {
 	public ITextureRegion mMenuBackground;
 
 	public Font mHeaderFont;
-
-	public ITextureRegion mGameRegion;
 
 	public ITextureRegion mScoreRegion;
 
@@ -98,6 +96,10 @@ public class ResourceManager {
 
 	public Font mBigHeaderFont;
 
+	public ITextureRegion mStartRegion;
+
+	public ITextureRegion mCountDownRegion;
+
 	public ResourceManager() {
 	}
 
@@ -121,7 +123,7 @@ public class ResourceManager {
 				activity.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
 
-		splashRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+		mSplashRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				splashTextureAtlas, activity.getAssets(), "splash.png");
 
 		try {
@@ -142,8 +144,8 @@ public class ResourceManager {
 		mGameBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
 				activity.getTextureManager(), MainActivity.W, MainActivity.H,
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
-		mGameRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				mGameBitmapTextureAtlas, activity.getAssets(), "game.png");
+		mSquare = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				mGameBitmapTextureAtlas, activity.getAssets(), "square.png");
 
 		try {
 			mGameBitmapTextureAtlas
@@ -161,11 +163,9 @@ public class ResourceManager {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 		mClassicBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
 				activity.getTextureManager(), MainActivity.W, MainActivity.H,
-				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
-		mClockRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				mClassicBitmapTextureAtlas, activity.getAssets(), "clock.png");
-		mSquare = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
-				mClassicBitmapTextureAtlas, activity.getAssets(), "square.png");
+				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);		
+		mStartRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				mClassicBitmapTextureAtlas, activity.getAssets(), "start.png");
 		try {
 			mClassicBitmapTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
@@ -186,6 +186,9 @@ public class ResourceManager {
 		mScoreRegion = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mChallengeBitmapTextureAtlas,
 						activity.getAssets(), "clock.png");
+		mCountDownRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(mChallengeBitmapTextureAtlas, activity.getAssets(),
+						"countdown.png");
 		mSquareBonusRegion = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mChallengeBitmapTextureAtlas,
 						activity.getAssets(), "square_bonus.png");
@@ -286,14 +289,14 @@ public class ResourceManager {
 		FontFactory.setAssetBasePath("font/");
 		mHeaderFont = FontFactory
 				.createFromAsset(engine.getFontManager(),
-						engine.getTextureManager(), 256, 256,
+						engine.getTextureManager(), 400, 400,
 						activity.getAssets(), "Hand_Of_Sean_Demo.ttf", 60f,
-						true, Color.BLACK_ABGR_PACKED_INT);
+						true, Color.WHITE_ABGR_PACKED_INT);
 		mBigHeaderFont = FontFactory
 				.createFromAsset(engine.getFontManager(),
-						engine.getTextureManager(), 256, 256,
+						engine.getTextureManager(), 400, 400,
 						activity.getAssets(), "Hand_Of_Sean_Demo.ttf", 70f,
-						true, Color.BLACK_ABGR_PACKED_INT);
+						true, Color.WHITE_ABGR_PACKED_INT);
 		mHeaderFont.load();
 		mBigHeaderFont.load();
 	}
@@ -313,7 +316,8 @@ public class ResourceManager {
 	public synchronized void playSound(int type) {
 		if (mSound != null) {
 			switch (type) {
-			case 0: break;
+			case 0:
+				break;
 			case 1:
 				mSound.play();
 				break;

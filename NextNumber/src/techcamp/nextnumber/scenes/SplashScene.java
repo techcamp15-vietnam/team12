@@ -23,7 +23,7 @@ public class SplashScene extends AbstractScene {
 
 	@Override
 	public void create() {
-		splash = new Sprite(0, 0, res.splashRegion, vbom);
+		splash = new Sprite(0, 0, res.mSplashRegion, vbom);
 		attachChild(splash);
 		splash.registerEntityModifier(new DelayModifier(
 				MainActivity.SPLASH_DURATION / 2000f) {

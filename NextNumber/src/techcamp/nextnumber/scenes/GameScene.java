@@ -21,7 +21,7 @@ public abstract class GameScene extends AbstractScene {
 	public static final int LIMIT_COL = 5;
 	public static final int LIMIT_ROW = 5;
 	public static int modePlayer; // mode gameplay CLASSIC/CHALLENGE
-	public static int modeGameplay; // mode player SINGLE/CHALLENGE
+	public static int modeGameplay; // mode player SINGLE/CHALLENGE	
 	protected Entity headLayer;
 	protected Entity mainLayer;	
 	protected Entity resultLayer;	

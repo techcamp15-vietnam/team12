@@ -13,7 +13,6 @@ import org.andengine.opengl.font.Font;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-import techcamp.nextnumber.manager.ResourceManager;
 import android.util.Log;
 
 public abstract class Square extends ScaleButton {
