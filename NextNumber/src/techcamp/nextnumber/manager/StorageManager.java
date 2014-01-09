@@ -14,19 +14,21 @@ public class StorageManager {
 	public static final String Achivement = "N_Achivement";
 	public static Activity main;
 	
-	public StorageManager(Activity main){
-		this.main=main;
+//	public StorageManager(Activity main){
+//		this.main=main;
+//	}
+	public static void setmain(Activity main){
+		StorageManager.main = main;
 	}
-	
-	public void Add(int mode, Vector v){
+	public static void Add(int mode, Vector v){
 		switch (mode) {
 			case 1: AddHighScore(v);break;
 			case 2: AddAchivement(v);break;
 		}
 		
 	}
-	public void AddHighScore(Vector v) { 
-		SharedPreferences settings = this.main.getSharedPreferences(HighScore, 0);
+	public static void AddHighScore(Vector v) { 
+		SharedPreferences settings = main.getSharedPreferences(HighScore, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		for (int i =1;i<MAX_LIST;i++)
 		{
@@ -45,9 +47,9 @@ public class StorageManager {
 			}
 		}
 	}
-	public Vector returnHighScore(){
+	public static Vector returnHighScore(){
 		Vector v= new Vector();
-		SharedPreferences settings = this.main.getSharedPreferences(HighScore, 0);
+		SharedPreferences settings = main.getSharedPreferences(HighScore, 0);
 		for (int i=1;i<MAX_LIST;i++){
 			String name = settings.getString(Integer.toString(i)+"s","NoBody");
 			float m = settings.getFloat(Integer.toString(i)+"v",10000f);
@@ -58,9 +60,9 @@ public class StorageManager {
 		}
 		return v;
 	}
-	public void AddAchivement(Vector v) {
+	public static void AddAchivement(Vector v) {
 		// TODO Auto-generated method stub
-		SharedPreferences settings = this.main.getSharedPreferences(Achivement, 0);
+		SharedPreferences settings = main.getSharedPreferences(Achivement, 0);
 		SharedPreferences.Editor editor = settings.edit();
 		String key =v.get(0).toString();
 		String des = settings.getString(key, null);
@@ -70,9 +72,9 @@ public class StorageManager {
 		editor.putString(key, des);
 		editor.commit();
 	}
-	public Vector returnAchivement(){
+	public static Vector returnAchivement(){
 		Vector v= new Vector();
-		SharedPreferences settings = this.main.getSharedPreferences(HighScore, 0);
+		SharedPreferences settings = main.getSharedPreferences(HighScore, 0);
 		for (int i=1;i<ACHIVEMENT;i++){
 			String name = settings.getString(Integer.toString(i),"NoAchivement");
 			boolean m = settings.getBoolean(Integer.toString(i)+"v",false);
