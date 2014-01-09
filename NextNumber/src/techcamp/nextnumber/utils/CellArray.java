@@ -19,8 +19,8 @@ public class CellArray {
 	// Create data for a game play. if classic mode mode=1; challenge mode = 2
 	public void CreateData(int mode) {
 		switch (mode) {
-		case 1: CreateNormal();
-		case 2: CreateEffect();
+		case 1: CreateNormal();break;
+		case 2: CreateEffect();break;
 		}
 	}
 //Create the challenge mode data
