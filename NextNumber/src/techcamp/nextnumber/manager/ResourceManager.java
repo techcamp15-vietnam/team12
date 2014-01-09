@@ -64,8 +64,6 @@ public class ResourceManager {
 
 	public Font mHeaderFont;
 
-	public ITextureRegion mScoreRegion;
-
 	public ITextureRegion mClockRegion;
 
 	public ITextureRegion mSquare;
@@ -182,10 +180,7 @@ public class ResourceManager {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 		mChallengeBitmapTextureAtlas = new BuildableBitmapTextureAtlas(
 				engine.getTextureManager(), MainActivity.W, MainActivity.H,
-				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
-		mScoreRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(mChallengeBitmapTextureAtlas,
-						activity.getAssets(), "clock.png");
+				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);		
 		mCountDownRegion = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(mChallengeBitmapTextureAtlas, activity.getAssets(),
 						"countdown.png");

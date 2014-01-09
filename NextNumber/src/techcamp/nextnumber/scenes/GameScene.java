@@ -13,13 +13,17 @@ import techcamp.nextnumber.MainActivity;
 
 public abstract class GameScene extends AbstractScene {
 
+	// types of gameplayer
 	public static final int SINGLE = 0;
 	public static final int MULTI = 1;
+	//types of gameplay	
 	public static final int CLASSIC = 2;
 	public static final int CHALLENGE = 3;
+	// size of table
 	public static final int LIMIT_SIZE = 25;
 	public static final int LIMIT_COL = 5;
 	public static final int LIMIT_ROW = 5;
+	
 	public static int modePlayer; // mode gameplay CLASSIC/CHALLENGE
 	public static int modeGameplay; // mode player SINGLE/CHALLENGE	
 	protected Entity headLayer;

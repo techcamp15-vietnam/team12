@@ -113,10 +113,7 @@ public class SceneManager {
 	 * @usage show Game Scene mode SINGLE/MULTI
 	 * @param mode
 	 */
-	public void showGameMode(int modeGame, int modePlayer) {
-		GameScene.modeGameplay = modeGame;
-		GameScene.modePlayer = modePlayer;
-
+	public void showGameMode() {		
 		if (GameScene.modeGameplay == GameScene.CLASSIC){
 			showScene(ClassicGameScene.class);
 		} else if (GameScene.modeGameplay == GameScene.CHALLENGE){

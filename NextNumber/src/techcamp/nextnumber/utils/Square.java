@@ -13,10 +13,17 @@ import org.andengine.opengl.font.Font;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
+import techcamp.nextnumber.scenes.GameScene;
+
 import android.util.Log;
 
 public abstract class Square extends ScaleButton {
 
+	// types of square
+	public static final int NONE = 0;
+	public static final int BONUS = 11;
+	public static final int DOUBLE = 22;
+	public static final int TRIPLE = 33;
 	private int type;
 	protected int value; // number in square
 
@@ -37,10 +44,30 @@ public abstract class Square extends ScaleButton {
 	public Square(float pX, float pY, ITextureRegion pTextureRegion,
 			VertexBufferObjectManager vbom, Font f, float scale, String s) {
 		super(pX, pY, pTextureRegion, vbom, f, scale, s);
-		this.type = 0;
+		this.type = NONE;
 		this.getText().setVisible(false);
-		value = Integer.parseInt(s);
+		value = Integer.parseInt(s);		
 	}
+
+	public int getType() {
+		return type;
+	}
+	
+	public int getValue() {
+		return value;
+	}
+	
+	public void setNoneType(){
+		setRed(0x41);
+		setGreen(0xb1);
+		setBlue(0xb2);
+	}
+	
+	public void setDoubleType(){
+		setRed(0xfd);
+		setGreen(0x01);
+		setBlue(0x0a);
+	}	
 	
 	@Override
 	protected void onManagedUpdate(final float pSecondsElapsed) {
@@ -60,7 +87,7 @@ public abstract class Square extends ScaleButton {
 					@Override
 					protected void onModifierFinished(final IEntity pItem) {
 						super.onModifierFinished(pItem);
-						SCALED = false;						
+						SCALED = false;
 						if (CLICKED) {
 							CLICKED = false;
 							onClick();
@@ -70,7 +97,7 @@ public abstract class Square extends ScaleButton {
 				SCALED = false;
 			}
 		}
-	}	
+	}
 
 	@Override
 	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,

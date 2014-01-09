@@ -186,10 +186,9 @@ public class ClassicGameScene extends GameScene {
 				super.onManagedUpdate(pSecondsElapsed);
 			}
 		};
-//		next.setPosition(headLayer.getX() + 15, headLayer.getY() + 40);
-//		this.headLayer.attachChild(next);
-		time.attachChild(next);
+		next.setPosition(this.headLayer.getX() + 15, this.headLayer.getY() + 40);		
 		this.headLayer.attachChild(time);
+		this.headLayer.attachChild(next);
 		Log.i("Game","Attach next");
 
 	}
