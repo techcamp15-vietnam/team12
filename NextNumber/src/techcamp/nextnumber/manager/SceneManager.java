@@ -21,20 +21,11 @@ import android.util.Log;
 
 public class SceneManager {
 
-	private static final SceneManager INSTANCE = new SceneManager();
-
-	protected static final int SINGLE = MenuScene.SINGLE;
-	protected static final int MULTI = MenuScene.MULTI;
-	protected static final int CLASSIC = MenuScene.CLASSIC;
-	protected static final int CHALLENGE = MenuScene.CHALLENGE;
+	private static final SceneManager INSTANCE = new SceneManager();	
 
 	private ResourceManager res = ResourceManager.getInstance();
 	private AbstractScene currentScene;
-	private LoadingScene loadingScene;
-	private int modeGameplay; // mode gameplay CLASSIC/CHALLENGE
-	private int modePlayer; // mode player SINGLE/CHALLENGE
-
-	private AbstractScene oldScene;
+	private LoadingScene loadingScene;	
 
 	private SceneManager() {
 	}
@@ -123,12 +114,12 @@ public class SceneManager {
 	 * @param mode
 	 */
 	public void showGameMode(int modeGame, int modePlayer) {
-		this.modeGameplay = modeGame;
-		this.modePlayer = modePlayer;
+		GameScene.modeGameplay = modeGame;
+		GameScene.modePlayer = modePlayer;
 
-		if (modeGameplay == CLASSIC){
+		if (GameScene.modeGameplay == GameScene.CLASSIC){
 			showScene(ClassicGameScene.class);
-		} else if (modeGameplay == CHALLENGE){
+		} else if (GameScene.modeGameplay == GameScene.CHALLENGE){
 			showScene(ChallengeGameScene.class);
 		}
 	}
@@ -138,8 +129,8 @@ public class SceneManager {
 	 * @param mode
 	 */
 	public void showMultiMenu(int mode) {
-		this.modeGameplay = mode;
-		this.modePlayer = MULTI;
+		GameScene.modeGameplay = mode;
+		GameScene.modePlayer = GameScene.MULTI;
 
 		showScene(MultiGameMenu.class);
 	}

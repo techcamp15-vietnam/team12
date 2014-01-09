@@ -5,9 +5,11 @@ package techcamp.nextnumber.utils;
 
 import java.util.Random;
 
+import techcamp.nextnumber.scenes.GameScene;
+
 public class CellArray {
-	private Celldata[] CA = new Celldata[25];
-	private int nextint; // The number have touch.
+	public Celldata[] CA = new Celldata[GameScene.LIMIT_SIZE];
+	public int nextint; // The number have touch.
 
 	// innit the CellArray
 	public CellArray() {

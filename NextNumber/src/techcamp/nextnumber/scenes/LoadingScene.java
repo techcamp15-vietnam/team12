@@ -54,4 +54,10 @@ public class LoadingScene extends AbstractScene {
 	public void onResume() {
 	}
 
+	@Override
+	public void onHiddenLayer() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
