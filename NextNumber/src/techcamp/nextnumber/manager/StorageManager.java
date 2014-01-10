@@ -4,12 +4,12 @@
 package techcamp.nextnumber.manager;
 
 import java.util.Vector;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.widget.TextView;
 public class StorageManager {
-	public static final int MAX_LIST=11;
-	public static final int ACHIVEMENT = 16;
+	public static final int MAX_LIST=9;
+	public static final int ACHIVEMENT = 12;
 	public static final String HighScore = "N_HighScore";
 	public static final String Achivement = "N_Achivement";
 	public static Activity main;
@@ -20,39 +20,38 @@ public class StorageManager {
 	public static void setmain(Activity main){
 		StorageManager.main = main;
 	}
-	public static void Add(int mode, Vector v){
-		switch (mode) {
-			case 1: AddHighScore(v);break;
-			case 2: AddAchivement(v);break;
-		}
-		
-	}
-	public static void AddHighScore(Vector v) { 
+	public static void AddHighScore(int mode, Vector v) { 
 		SharedPreferences settings = main.getSharedPreferences(HighScore, 0);
 		SharedPreferences.Editor editor = settings.edit();
+		long t= Long.parseLong(v.get(1).toString());
+		String s0= v.get(0).toString();
 		for (int i =1;i<MAX_LIST;i++)
 		{
 			String s = Integer.toString(i);
-			Float t= Float.parseFloat(v.get(1).toString());
-			String s0= v.get(0).toString();
-			Float tx= settings.getFloat(s+"v",1000f);
+			long tx= settings.getLong(mode+s+"v",1000000);
+			String sx= settings.getString(mode+s+"s","Nobody");
 			if (tx>t) {
-				editor.remove(s+"s");
-				editor.remove(s+"v");
+				editor.remove(mode+s+"s");
+				editor.remove(mode+s+"v");
 				editor.commit();
-				editor.putString(s+"s", s0);
-				editor.putFloat(s+"v", t);
+				editor.putString(mode+s+"s", s0);
+				editor.putLong(mode+s+"v", t);
 				editor.commit();
-				break;
+				t=tx;s0=sx;
 			}
 		}
 	}
-	public static Vector returnHighScore(){
+	public static long returnBestime(int mode){
+		SharedPreferences settings = main.getSharedPreferences(HighScore, 0);
+			long m = settings.getLong(mode+1+"v",10000);
+			return m;
+	}
+	public static Vector returnHighScore(int mode){
 		Vector v= new Vector();
 		SharedPreferences settings = main.getSharedPreferences(HighScore, 0);
 		for (int i=1;i<MAX_LIST;i++){
-			String name = settings.getString(Integer.toString(i)+"s","NoBody");
-			float m = settings.getFloat(Integer.toString(i)+"v",10000f);
+			String name = settings.getString(mode+Integer.toString(i)+"s","NoBody");
+			long m = settings.getLong(mode+Integer.toString(i)+"v",10000);
 			Vector temp= new Vector();
 			temp.add(0,name);
 			temp.add(1,m);
@@ -60,29 +59,37 @@ public class StorageManager {
 		}
 		return v;
 	}
-	public static void AddAchivement(Vector v) {
+	public static void AddAchivement(int mode) {
 		// TODO Auto-generated method stub
 		SharedPreferences settings = main.getSharedPreferences(Achivement, 0);
 		SharedPreferences.Editor editor = settings.edit();
-		String key =v.get(0).toString();
-		String des = settings.getString(key, null);
+		String key =Integer.toString(mode);
 		editor.remove(key);
 		editor.commit();
-		editor.putBoolean(key+"v", true);
-		editor.putString(key, des);
+		editor.putBoolean(key, true);
 		editor.commit();
 	}
 	public static Vector returnAchivement(){
 		Vector v= new Vector();
-		SharedPreferences settings = main.getSharedPreferences(HighScore, 0);
-		for (int i=1;i<ACHIVEMENT;i++){
-			String name = settings.getString(Integer.toString(i),"NoAchivement");
-			boolean m = settings.getBoolean(Integer.toString(i)+"v",false);
-			Vector temp= new Vector();
-			temp.add(0,name);
-			temp.add(1,m);
-			v.add(temp);
+		SharedPreferences settings = main.getSharedPreferences(Achivement, 0);
+		for (int i=0;i<ACHIVEMENT;i++){
+			boolean m = settings.getBoolean(Integer.toString(i),false);
+			v.add(0,m);
 		}
 		return v;
+	}
+	public static int getData(String key){
+		SharedPreferences settings = main.getSharedPreferences(Achivement, 0);
+		int i= settings.getInt(key, 0);
+		return i;
+	}
+	public static void Update(String key, int values) {
+		// TODO Auto-generated method stub
+		SharedPreferences settings = main.getSharedPreferences(Achivement, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.remove(key);
+		editor.commit();
+		editor.putInt(key, values);
+		editor.commit();
 	}
 }
