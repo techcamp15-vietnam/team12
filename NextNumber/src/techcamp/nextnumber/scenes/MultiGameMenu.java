@@ -20,7 +20,10 @@ import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder
 import org.andengine.opengl.texture.bitmap.BitmapTextureFormat;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
+import android.sax.StartElementListener;
+
 import techcamp.nextnumber.MainActivity;
+import techcamp.nextnumber.manager.ResourceManager;
 import techcamp.nextnumber.manager.SceneManager;
 import techcamp.nextnumber.utils.ScaleButton;
 
@@ -29,15 +32,20 @@ public class MultiGameMenu extends AbstractScene {
 	protected static final int CREATE = -1;
 	protected static final int FIND = -2;
 	private int select = CREATE;
+	private String opposite = "";
 	private Entity waitLayer;
 	private Entity homeLayer;
 	private ITextureRegion mFindRegion;
 	private ITextureRegion mStartRegion;
 	private ITextureRegion mCreateRegion;
 	private BuildableBitmapTextureAtlas bTextureAtlas;
+	private ScaleButton startBtn;
+	public static MultiGameMenu instance;
+	private boolean updateText = false;
 
 	@Override
 	public void loadResources() {
+		instance = this;
 		res.loadMenuBackground();
 		res.loadFonts();
 		res.loadMusic();
@@ -74,10 +82,15 @@ public class MultiGameMenu extends AbstractScene {
 		homeLayer = new Entity(0, 0);
 		waitLayer = new Entity(MainActivity.W, 0);
 		ScaleButton createBtn = new ScaleButton(15, 0, mCreateRegion, vbom,
-				1.2f) {
+				1.2f, new Text(0, 0, res.mFont, "Create", vbom)) {
 
+			/**
+			 * call to DeviceListActivity to find if any device available to
+			 * connect
+			 */
 			@Override
 			public void onClick() {
+				ResourceManager.getInstance().activity.connectToDevices();
 				goToWait(CREATE);
 			}
 		};
@@ -86,10 +99,15 @@ public class MultiGameMenu extends AbstractScene {
 		homeLayer.attachChild(createBtn);
 		this.registerTouchArea(createBtn);
 
-		ScaleButton findBtn = new ScaleButton(0, 0, mFindRegion, vbom, 1.2f) {
+		ScaleButton findBtn = new ScaleButton(0, 0, mFindRegion, vbom, 1.2f,
+				new Text(0, 0, res.mFont, "Wait", vbom)) {
 
+			/*
+			 * ensure bluetooth device in discoverable mode
+			 */
 			@Override
 			public void onClick() {
+				ResourceManager.getInstance().activity.ensureDiscoverable();
 				goToWait(FIND);
 			}
 		};
@@ -100,26 +118,26 @@ public class MultiGameMenu extends AbstractScene {
 
 		Entity waitSub = new Entity(MainActivity.W, 0);
 		waitLayer.attachChild(waitSub);
-		ScaleButton startBtn = new ScaleButton(0f, 0f, mStartRegion, vbom,
-				1.2f, new Text(0f, 0f, res.mFont, "Connect", vbom) {
-					protected int current = CREATE;
+		startBtn = new ScaleButton(0f, 0f, mStartRegion, vbom, 1.2f, new Text(
+				0f, 0f, res.mFont, "Accept", vbom) {
+			protected int current = CREATE;
 
-					@Override
-					protected void onManagedUpdate(float pSecondsElapsed) {
-						if (current != select) {
-							current = select;
-							if (current == FIND) {
-								this.setText("Start");
-							} else {
-								this.setText("Connect");
-							}
-						}
+			@Override
+			protected void onManagedUpdate(float pSecondsElapsed) {
+				if (current != select) {
+					current = select;
+					if (current == FIND) {
+						this.setText("Accept");
+					} else {
+						this.setText("Start");
 					}
-				}) {
+				}
+			}
+		}) {
 
 			@Override
 			public void onClick() {
-				SceneManager.getInstance().showGameMode();
+				showGame();
 			}
 		};
 		startBtn.setPosition(MainActivity.W / 2 - startBtn.getWidth() / 2,
@@ -135,14 +153,29 @@ public class MultiGameMenu extends AbstractScene {
 
 	protected void goToWait(int type) {
 		select = type;
-		if (type == CREATE) {
-			// Handler
-		} else if (type == FIND) {
-			// Handler
-		}
+
+		Text opp = new Text(0, 0, res.mSmallFont, "Waiting", vbom) {			
+			@Override
+			protected void onManagedUpdate(float pSecondsElapsed) {
+				if (updateText) {
+					this.setText(opposite);
+					updateText = false;
+				}
+			}
+		};
+		opp.setPosition(MainActivity.W * .15f, MainActivity.H * .3f);
+		waitLayer.attachChild(opp);
 
 		this.currentLayer = waitLayer;
 		this.layerView = true;
+
+		if (type == CREATE) {
+			// Handler
+		} else if (type == FIND) {
+			this.startBtn.setEnable(false);
+			// wait untill connect
+		}
+
 		homeLayer.registerEntityModifier(new MoveModifier(0.5f, homeLayer
 				.getX(), -MainActivity.W, homeLayer.getY(), 0f));
 		waitLayer.registerEntityModifier(new MoveModifier(0.5f, waitLayer
@@ -157,12 +190,12 @@ public class MultiGameMenu extends AbstractScene {
 	}
 
 	@Override
-	public void destroy() {	
-		
+	public void destroy() {
+
 	}
 
 	@Override
-	public void onPause() {		
+	public void onPause() {
 	}
 
 	@Override
@@ -181,6 +214,14 @@ public class MultiGameMenu extends AbstractScene {
 			waitLayer.registerEntityModifier(new MoveModifier(0.5f, waitLayer
 					.getX(), MainActivity.W, waitLayer.getY(), 0f));
 		}
+	}
+	public void showGame(){
+		SceneManager.getInstance().showGameMode();
+	}
+	
+	public void updateText(String msg){
+		opposite = msg;
+		updateText = true;
 	}
 
 }

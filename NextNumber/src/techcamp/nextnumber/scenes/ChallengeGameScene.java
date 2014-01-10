@@ -7,14 +7,18 @@ package techcamp.nextnumber.scenes;
 
 import org.andengine.entity.Entity;
 import org.andengine.entity.IEntity;
+import org.andengine.entity.modifier.DelayModifier;
 import org.andengine.entity.modifier.MoveModifier;
 import org.andengine.entity.modifier.ScaleModifier;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
 import android.util.Log;
 
 import techcamp.nextnumber.MainActivity;
+import techcamp.nextnumber.manager.AchievementManager;
+import techcamp.nextnumber.manager.ResourceManager;
 import techcamp.nextnumber.utils.Cell;
 import techcamp.nextnumber.utils.CellArray;
 import techcamp.nextnumber.utils.ScaleButton;
@@ -29,11 +33,12 @@ public class ChallengeGameScene extends GameScene {
 	protected long restTime = 0;
 	private Text next;
 	private Entity table;
-	private CellArray C;
-	private int count_bonus;
-	private int count_double;
-	private int count_triple;
-	private int count_blink;
+	private CellArray C = MainActivity.cellBoardClassicalMode;
+	private boolean win;
+	private int count_bonus = 0;
+	private int count_double = 0;
+	private int count_triple = 0;
+	private int count_blink = 0;
 
 	@Override
 	public void loadResources() {
@@ -71,9 +76,7 @@ public class ChallengeGameScene extends GameScene {
 
 	@Override
 	public void addToMainLayer() {
-		table = new Entity(0, 0);
-		C = new CellArray();
-		C.CreateData(2); // random for challenge
+		table = new Entity(0, 0);		
 		float boundSpace = (MainActivity.W - LIMIT_COL * res.mSquare.getWidth())
 				/ LIMIT_COL; // calculate suitable space between squares
 		Log.i("Game", "" + boundSpace + "," + res.mSquare.getWidth());
@@ -111,6 +114,7 @@ public class ChallengeGameScene extends GameScene {
 										started = false;
 										this.setAlpha(.5f);
 										this.setEnable(false);
+										win = true;
 										finish();
 									} else {
 										handlerSquare(this);
@@ -162,20 +166,25 @@ public class ChallengeGameScene extends GameScene {
 			square.setEnable(false);
 			break;
 		case Cell.DOUBLE:
+			count_double++;
 			table.detachChild(square);
 			this.unregisterTouchArea(square);
 			square = new Square(square.getX(), square.getY(), res.mSquare,
-					vbom, res.mFont, 1.2f, "" + square.getValue(),
-					Cell.NONE) {
+					vbom, res.mFont, 1.2f, "" + square.getValue(), Cell.NONE) {
 				@Override
 				public void onClick() {
 					if (GameScene.modePlayer == GameScene.SINGLE) {
 						if (this.value == C.nextint) {
 							if (C.nextint == LIMIT_SIZE) {
+								if (this.getType() == Cell.NONE
+										|| this.getType() == Cell.BONUS
+										|| this.getType() == Cell.BLINK){
 								started = false;
 								this.setAlpha(.5f);
 								this.setEnable(false);
+								win = true;
 								finish();
+								}
 							} else {
 								handlerSquare(this);
 							}
@@ -188,6 +197,7 @@ public class ChallengeGameScene extends GameScene {
 			this.registerTouchArea(square);
 			break;
 		case Cell.TRIPLE:
+			count_triple++;
 			table.detachChild(square);
 			this.unregisterTouchArea(square);
 			square = new Square(square.getX(), square.getY(),
@@ -198,10 +208,15 @@ public class ChallengeGameScene extends GameScene {
 					if (GameScene.modePlayer == GameScene.SINGLE) {
 						if (this.value == C.nextint) {
 							if (C.nextint == LIMIT_SIZE) {
+								if (this.getType() == Cell.NONE
+										|| this.getType() == Cell.BONUS
+										|| this.getType() == Cell.BLINK){
 								started = false;
 								this.setAlpha(.5f);
 								this.setEnable(false);
+								win = true;
 								finish();
+								}
 							} else {
 								handlerSquare(this);
 							}
@@ -213,7 +228,8 @@ public class ChallengeGameScene extends GameScene {
 			table.attachChild(square);
 			this.registerTouchArea(square);
 			break;
-		case Cell.BONUS:
+		case Cell.BONUS:			
+			count_bonus++;
 			C.nextint++;
 			square.setEnable(false);
 			for (int i = 0; i < LIMIT_SIZE; i++) {
@@ -241,6 +257,7 @@ public class ChallengeGameScene extends GameScene {
 			}
 			break;
 		case Cell.BLINK:
+			count_blink++;
 			C.nextint++;
 			square.setAlpha(.5f);
 			square.setEnable(false);
@@ -249,9 +266,37 @@ public class ChallengeGameScene extends GameScene {
 	}
 
 	protected void finish() {
-		for (int i = 0; i < table.getChildCount(); i++){
-			this.unregisterTouchArea((Square)table.getChildByIndex(i));
+		for (int i = 0; i < table.getChildCount(); i++) {
+			this.unregisterTouchArea((Square) table.getChildByIndex(i));
 		}
+		
+		if (count_blink >= 1){
+			AchievementManager.num_blink++;
+		}
+		if (count_bonus >=1){
+			AchievementManager.num_bonus++;
+		}
+		if (count_double >=1){
+			AchievementManager.num_double++;
+		}
+		if (count_triple >=1){
+			AchievementManager.num_triple++;
+		}
+		
+		AchievementManager.Update();
+		Sprite s;
+		if (win){
+			s = new Sprite(0,0,res.mWinRegion,vbom);
+			s.setPosition(MainActivity.W*.5f-s.getWidth()*.5f,MainActivity.H*.5f-s.getHeight()*.5f);
+			this.attachChild(s);
+			ResourceManager.getInstance().playSound(4);// sound win
+		} else {
+			s = new Sprite(0,0,res.mWinRegion,vbom);
+			s.setPosition(MainActivity.W*.5f-s.getWidth()*.5f,MainActivity.H*.5f-s.getHeight()*.5f);
+			this.attachChild(s);
+			ResourceManager.getInstance().playSound(5);// sound lose
+		}				
+		s.registerEntityModifier(new DelayModifier(4000));
 	}
 
 	protected static ChallengeGameScene getIntance() {
@@ -284,6 +329,7 @@ public class ChallengeGameScene extends GameScene {
 					}
 					if (t <= 0) {
 						started = false;
+						win = false;
 						finish();
 					} else {
 						final long second = System.currentTimeMillis();
@@ -300,12 +346,10 @@ public class ChallengeGameScene extends GameScene {
 				}
 				super.onManagedUpdate(pSecondsElapsed);
 			}
-			public long getRestTime() {
-				return t;
-			}
 		};
+
 		timeText.setPosition(time.getX() - timeText.getWidth() - 15,
-				time.getY() + 40);
+				time.getY() + 45);
 		time.attachChild(timeText);
 		this.headLayer.attachChild(time);
 
@@ -323,7 +367,7 @@ public class ChallengeGameScene extends GameScene {
 				super.onManagedUpdate(pSecondsElapsed);
 			}
 		};
-		next.setPosition(15, headLayer.getY() + 40);
+		next.setPosition(15, 45);
 		this.headLayer.attachChild(next);
 	}
 }

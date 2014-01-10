@@ -15,8 +15,6 @@ import org.andengine.opengl.font.Font;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-import android.util.Log;
-
 import techcamp.nextnumber.manager.ResourceManager;
 
 public abstract class ScaleButton extends Sprite {

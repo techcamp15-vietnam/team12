@@ -52,9 +52,7 @@ public class ResourceManager {
 
 	public Music mMusic;
 
-	public Sound mSound;
-
-	public ITextureRegion mAchivementRegion;
+	public Sound mSound;	
 
 	public ITextureRegion mHighscoreRegion;
 
@@ -63,6 +61,8 @@ public class ResourceManager {
 	public ITextureRegion mMenuBackground;
 
 	public Font mFont;
+	
+	public Font mSmallFont;
 
 	public ITextureRegion mClockRegion;
 
@@ -99,6 +99,24 @@ public class ResourceManager {
 	public Font mWFont;
 
 	public Font mHeaderFont;
+
+	public ITextureRegion mBadgeARegion;
+
+	public ITextureRegion mBadgeBRegion;
+
+	private Sound mClick;
+
+	private Sound mDoubleClick;
+
+	private Sound mWinSound;
+
+	private Sound mLoseSound;
+
+	private Sound mCountdown;
+
+	public ITextureRegion mWinRegion;
+
+	public ITextureRegion mLoseRegion;
 
 	public ResourceManager() {
 	}
@@ -146,6 +164,10 @@ public class ResourceManager {
 				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
 		mSquare = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
 				mGameBitmapTextureAtlas, activity.getAssets(), "square.png");
+		mWinRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				mGameBitmapTextureAtlas, activity.getAssets(), "win.png");
+		mLoseRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(
+				mGameBitmapTextureAtlas, activity.getAssets(), "lose.png");
 
 		try {
 			mGameBitmapTextureAtlas
@@ -245,13 +267,15 @@ public class ResourceManager {
 		}
 	}
 
-	public synchronized void loadAchivementResources() {
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+	public synchronized void loadAchievementResources() {
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/achiev/");
 		achievTextureAtlas = new BuildableBitmapTextureAtlas(
 				engine.getTextureManager(), MainActivity.W, MainActivity.H,
-				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);
-		mAchivementRegion = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(highTextureAtlas, activity, "achive.png");
+				BitmapTextureFormat.RGBA_4444, TextureOptions.BILINEAR);		
+		mBadgeARegion = BitmapTextureAtlasTextureRegionFactory				
+				.createFromAsset(achievTextureAtlas, activity, "complete.png");
+		mBadgeBRegion = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(achievTextureAtlas, activity, "uncomplete.png");
 		try {
 			achievTextureAtlas
 					.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(
@@ -284,6 +308,11 @@ public class ResourceManager {
 
 	public synchronized void loadFonts() {
 		FontFactory.setAssetBasePath("font/");
+		mSmallFont = FontFactory
+				.createFromAsset(engine.getFontManager(),
+						engine.getTextureManager(), 400, 400,
+						activity.getAssets(), "Hand_Of_Sean_Demo.ttf", 40f,
+						true, Color.BLACK_ARGB_PACKED_INT);
 		mFont = FontFactory
 				.createFromAsset(engine.getFontManager(),
 						engine.getTextureManager(), 400, 400,
@@ -298,7 +327,8 @@ public class ResourceManager {
 				.createFromAsset(engine.getFontManager(),
 						engine.getTextureManager(), 400, 400,
 						activity.getAssets(), "Hand_Of_Sean_Demo.ttf", 70f,
-						true, Color.BLACK_ARGB_PACKED_INT);		
+						true, Color.BLACK_ARGB_PACKED_INT);
+		mSmallFont.load();
 		mFont.load();
 		mHeaderFont.load();
 		mWFont.load();
@@ -309,6 +339,16 @@ public class ResourceManager {
 		try {
 			mSound = SoundFactory.createSoundFromAsset(
 					engine.getSoundManager(), activity, "sound.mp3");
+			mClick = SoundFactory.createSoundFromAsset(
+					engine.getSoundManager(), activity, "click.mp3");
+			mDoubleClick = SoundFactory.createSoundFromAsset(
+					engine.getSoundManager(), activity, "double.mp3");
+			mWinSound = SoundFactory.createSoundFromAsset(
+					engine.getSoundManager(), activity, "win.mp3");
+			mLoseSound = SoundFactory.createSoundFromAsset(
+					engine.getSoundManager(), activity, "lose.mp3");
+			mCountdown = SoundFactory.createSoundFromAsset(
+					engine.getSoundManager(), activity, "lose.mp3");
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -324,6 +364,16 @@ public class ResourceManager {
 			case 1:
 				mSound.play();
 				break;
+			case 2:
+				mClick.play();break;
+			case 3:
+				mDoubleClick.play();break;
+			case 4:
+				mWinSound.play();break;
+			case 5:
+				mLoseSound.play();break;
+			case 6:
+				mCountdown.play();break;
 			}
 		}
 	}
@@ -335,7 +385,7 @@ public class ResourceManager {
 					engine.getMusicManager(), activity, "music.mp3");
 			mMusic.setVolume(0.5f);
 			mMusic.setLooping(true);
-			mMusic.pause();
+			mMusic.play();
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

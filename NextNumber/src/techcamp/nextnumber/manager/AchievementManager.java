@@ -5,6 +5,8 @@ package techcamp.nextnumber.manager;
 
 import java.util.Vector;
 
+import android.util.Log;
+
 public class AchievementManager {
 	public static int game_play;
 	public static int num_double;
@@ -19,11 +21,11 @@ public class AchievementManager {
 	public static String num_bonuss="Bonus Number";
 	public static String num_blinks="Blink_Number";
 	public static String num_wins="Game win";
-	public static Boolean[] status = new Boolean[12];
+	public static boolean[] status = new boolean[12];
 	public static final String[] AchieveName={"The way of Success","Try hard spirit","Little Luck","Ninja Tracker","Never Give Up","Slowdown","Fast and Furios",
 	"I'm winner", "Master Number","ChosenOne","Lucky Boy","Try hard Imortal"};
 	public static final String[] AchieveDes={"Complete a game.\n Only one way to success. Go step and step.","Complete a game have double click number\n Do the same work, different result.",
-		"Complete a game have boom number\n Do less, more effective","Complete a game have Blink Number\n You can run but you can hide","Complete a game have Triple click number\n Lose not means failure. Failure means give up",
+		"Complete a game have boom number\n Do less, more effective","Complete a game have Blink Number\n You can run but you can't hide","Complete a game have Triple click number\n Lose not means failure. Failure means give up",
 		"Complete a game less than 50s\n Don't hurry! this is game", "Complete a game less than 10s\n We're fast. We have power","Win one game in mutliplayer\n You're good, I'm better","Complete a game less than 4s\n Number in my breath!",
 		"Win 50 games in multiplay\n I'm only defeated by myself!"," Touch 10 Bonus Numbers \n The luck behide me","Touch 10 Triple Numbers\n So hard. but it ok!"};
 	public static void loadAchi(){
@@ -42,7 +44,8 @@ public class AchievementManager {
 		}
 	}
 	public static void UpdateStatus(){
-		for(int i=1;i<12;i++){
+		for(int i=0;i<12;i++){
+			Log.i("Err",""+i);
 			if (!status[i]){
 				switch (i){
 				case 0: 

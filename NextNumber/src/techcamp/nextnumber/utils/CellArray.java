@@ -22,6 +22,7 @@ public class CellArray {
 
 	// Create data for a game play. if classic mode mode=1; challenge mode = 2
 	public void CreateData(int mode) {
+		nextint=1;	
 		switch (mode) {
 		case 1:
 			CreateNormal();

@@ -6,15 +6,29 @@
 
 package techcamp.nextnumber.scenes;
 
+import java.util.Vector;
+
 import org.andengine.entity.Entity;
 import org.andengine.entity.IEntity;
+import org.andengine.entity.modifier.DelayModifier;
 import org.andengine.entity.modifier.MoveModifier;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
+
 import techcamp.nextnumber.MainActivity;
+import techcamp.nextnumber.R;
+import techcamp.nextnumber.manager.AchievementManager;
+import techcamp.nextnumber.manager.ResourceManager;
+import techcamp.nextnumber.manager.StorageManager;
 import techcamp.nextnumber.utils.CellArray;
 import techcamp.nextnumber.utils.ScaleButton;
 import techcamp.nextnumber.utils.Square;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
 
 public class ClassicGameScene extends GameScene {
 
@@ -22,8 +36,9 @@ public class ClassicGameScene extends GameScene {
 	private Entity table;
 	private Text next;
 	private Text timeText;
-	private CellArray C;
+	private CellArray C = MainActivity.cellBoardClassicalMode;	
 	private static ClassicGameScene instance;
+	private boolean win = true;
 
 	@Override
 	public void loadResources() {
@@ -78,6 +93,7 @@ public class ClassicGameScene extends GameScene {
 								started = false;
 								this.setAlpha(.5f);
 								this.setEnable(false);
+								win = true;
 								finish();
 							} else {
 								C.nextint++;
@@ -87,7 +103,6 @@ public class ClassicGameScene extends GameScene {
 							}
 						}
 					}
-
 				};
 				s.setSound(0);
 				table.attachChild(s);
@@ -106,8 +121,8 @@ public class ClassicGameScene extends GameScene {
 			@Override
 			public void onClick() {
 				ClassicGameScene.getIntance().unregisterTouchArea(this);
-				this.registerEntityModifier(new MoveModifier(.5f, 0,
-						MainActivity.W * 1.5f, 0, 0) {
+				this.registerEntityModifier(new MoveModifier(.5f, this.getX(),
+						MainActivity.W * 1.5f, this.getY(), this.getY()) {
 					@Override
 					protected void onModifierFinished(IEntity pItem) {
 						setStartTouch();
@@ -115,6 +130,7 @@ public class ClassicGameScene extends GameScene {
 				});
 			}
 		};
+		start.setPosition(MainActivity.W*.5f - start.getWidth()*.5f,MainActivity.H*.375f - start.getHeight()*.5f);
 		this.registerTouchArea(start);
 		this.mainLayer.attachChild(start);
 
@@ -124,6 +140,57 @@ public class ClassicGameScene extends GameScene {
 		for (int i = 0; i < table.getChildCount(); i++) {
 			this.unregisterTouchArea((Square) table.getChildByIndex(i));
 		}
+		
+		AchievementManager.Update();
+		Sprite s;
+		if (win){
+			AchievementManager.game_play++;
+			s = new Sprite(0,0,res.mWinRegion,vbom);
+			s.setPosition(MainActivity.W*.5f-s.getWidth()*.5f,MainActivity.H*.5f-s.getHeight()*.5f);
+			this.attachChild(s);
+			ResourceManager.getInstance().playSound(4);// sound win
+		} else {
+			s = new Sprite(0,0,res.mWinRegion,vbom);
+			s.setPosition(MainActivity.W*.5f-s.getWidth()*.5f,MainActivity.H*.5f-s.getHeight()*.5f);
+			this.attachChild(s);
+			ResourceManager.getInstance().playSound(5);// sound lose
+		}				
+		s.registerEntityModifier(new DelayModifier(4000));
+		
+		activity.runOnUiThread(new Runnable() {
+			
+			@Override
+			public void run() {
+				AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+			    // Get the layout inflater
+			    LayoutInflater inflater = activity.getLayoutInflater();
+			    final View v = inflater.inflate(R.layout.result, null);
+			    builder.setView(v);			  			    
+			    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			               @Override
+			               public void onClick(final DialogInterface dialog, int id) {//			            	
+			           		String s = timeText.getText().toString();
+			           		EditText text = (EditText) v.findViewById(R.id.editText);
+			           		Log.i("Game", "" + text);
+			           		long timeT = Integer.parseInt(s.substring(0, 1)) * 60000
+			           				+ Integer.parseInt(s.substring(2, 4)) * 1000
+			           				+ Integer.parseInt(s.substring(5, 7)) * 10;
+			           		Log.i("Game", "" + timeT+"."+text);
+			           		Vector n = new Vector();			           		
+			           		n.add(text.getText().toString());
+			           		n.add(timeT);
+			           		StorageManager.AddHighScore(0, n);
+			               }
+			           })
+			           .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			               public void onClick(DialogInterface dialog, int id) {			                   
+			               }
+			           }).setCancelable(false);
+			    AlertDialog alert = builder.create();			    			    
+			    alert.show();
+			}
+		});
+				
 	}
 
 	protected static ClassicGameScene getIntance() {
@@ -145,7 +212,7 @@ public class ClassicGameScene extends GameScene {
 		timeText = new Text(0, 0, res.mFont, "0:00.00", vbom) {
 			long current;
 			boolean first = true;
-			long t = 0; // time in miliseconds/10
+			public long t = 0; // time in miliseconds/10
 
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
@@ -165,21 +232,18 @@ public class ClassicGameScene extends GameScene {
 									t / 6000, (t / 100) % 60, t % 100));
 						} else {
 							started = false;
+							win = false;
 						}
 					}
 				}
 				super.onManagedUpdate(pSecondsElapsed);
-			}
-
-			public long getTime() {
-				return t;
 			}
 		};
 		timeText.setPosition(time.getX() - timeText.getWidth() - 15,
 				time.getY() + 40);
 		time.attachChild(timeText);
 
-		next = new Text(0, 0, res.mFont, "Next:  0", vbom) {
+		next = new Text(0, 0, res.mFont, "Next: 0", vbom) {
 			protected int current = 0;
 
 			@Override
@@ -193,7 +257,7 @@ public class ClassicGameScene extends GameScene {
 				super.onManagedUpdate(pSecondsElapsed);
 			}
 		};
-		next.setPosition(this.headLayer.getX() + 15, this.headLayer.getY() + 40);
+		next.setPosition(15, 40);
 		this.headLayer.attachChild(time);
 		this.headLayer.attachChild(next);
 		Log.i("Game", "Attach next");

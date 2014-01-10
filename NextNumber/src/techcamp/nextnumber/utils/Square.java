@@ -13,8 +13,6 @@ import org.andengine.opengl.font.Font;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
-import techcamp.nextnumber.scenes.GameScene;
-
 import android.util.Log;
 
 public abstract class Square extends ScaleButton {
@@ -33,6 +31,13 @@ public abstract class Square extends ScaleButton {
 			int type) {
 		super(pX, pY, pTextureRegion, vbom, f, scale, s);
 		this.type = type;
+		switch(type){
+		case 0:break;
+		case 11: soundType = 2;break;
+		case 22: soundType = 3;break;
+		case 33: soundType = 3;break;
+		case 44: soundType = 2;break;			
+		}
 		this.getText().setVisible(false);
 		value = Integer.parseInt(s);
 	}
@@ -41,6 +46,13 @@ public abstract class Square extends ScaleButton {
 			VertexBufferObjectManager vbom, Font f, float scale, String s) {
 		super(pX, pY, pTextureRegion, vbom, f, scale, s);
 		this.type = Cell.NONE;
+		switch(type){
+		case 0:break;
+		case 11: soundType = 2;break;
+		case 22: soundType = 3;break;
+		case 33: soundType = 3;break;
+		case 44: soundType = 2;break;			
+		}
 		this.getText().setVisible(false);
 		value = Integer.parseInt(s);		
 	}

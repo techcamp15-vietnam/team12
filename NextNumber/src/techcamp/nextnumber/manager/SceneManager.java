@@ -14,6 +14,8 @@ import techcamp.nextnumber.scenes.ClassicGameScene;
 import techcamp.nextnumber.scenes.GameScene;
 import techcamp.nextnumber.scenes.LoadingScene;
 import techcamp.nextnumber.scenes.MenuScene;
+//import techcamp.nextnumber.scenes.MultiChallengeGameScene;
+import techcamp.nextnumber.scenes.MultiClassicGameScene;
 import techcamp.nextnumber.scenes.MultiGameMenu;
 import techcamp.nextnumber.scenes.SplashScene;
 import android.os.AsyncTask;
@@ -115,9 +117,14 @@ public class SceneManager {
 	 */
 	public void showGameMode() {		
 		if (GameScene.modeGameplay == GameScene.CLASSIC){
-			showScene(ClassicGameScene.class);
+			if(GameScene.modePlayer == GameScene.SINGLE){
+				showScene(ClassicGameScene.class);
+			}else showScene(MultiClassicGameScene.class);
+			
 		} else if (GameScene.modeGameplay == GameScene.CHALLENGE){
-			showScene(ChallengeGameScene.class);
+			if(GameScene.modePlayer == GameScene.MULTI){
+			//	showScene(MultiChallengeGameScene.class);
+			}else showScene(ChallengeGameScene.class);
 		}
 	}
 

@@ -43,7 +43,7 @@ public class StorageManager {
 	}
 	public static long returnBestime(int mode){
 		SharedPreferences settings = main.getSharedPreferences(HighScore, 0);
-			long m = settings.getLong(mode+1+"v",10000);
+			long m = settings.getLong(mode+1+"v",1000000);
 			return m;
 	}
 	public static Vector returnHighScore(int mode){
@@ -51,7 +51,7 @@ public class StorageManager {
 		SharedPreferences settings = main.getSharedPreferences(HighScore, 0);
 		for (int i=1;i<MAX_LIST;i++){
 			String name = settings.getString(mode+Integer.toString(i)+"s","NoBody");
-			long m = settings.getLong(mode+Integer.toString(i)+"v",10000);
+			long m = settings.getLong(mode+Integer.toString(i)+"v",1000000);
 			Vector temp= new Vector();
 			temp.add(0,name);
 			temp.add(1,m);
